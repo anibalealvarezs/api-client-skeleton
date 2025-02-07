@@ -1,0 +1,4 @@
+/vendor/
+/.idea/
+/bin/
+/config/config.yaml
