@@ -2,6 +2,9 @@
 
 namespace Anibalealvarezs\ApiSkeleton;
 
+use Anibalealvarezs\ApiSkeleton\Classes\Exceptions\ApiRequestException;
+use Anibalealvarezs\ApiSkeleton\Classes\Exceptions\AuthenticationException;
+use Anibalealvarezs\ApiSkeleton\Classes\Exceptions\DebugException;
 use Anibalealvarezs\ApiSkeleton\Enums\AuthType;
 use Anibalealvarezs\ApiSkeleton\Enums\DelayUnit;
 use Anibalealvarezs\OAuthV1\Enums\SignatureMethod;
@@ -19,6 +22,7 @@ use Anibalealvarezs\OAuthV1\OAuthV1;
 class Client
 {
     protected string $baseUrl;
+    protected ?GuzzleClient $guzzleClient = null;
     protected string $authUrl = "";
     protected string $tokenUrl = "";
     protected string $redirectUrl = "https://oauth.pstmn.io/v1/browser-callback";
@@ -49,6 +53,7 @@ class Client
     /**
      * Client constructor.
      * @param string $baseUrl
+     * @param GuzzleClient|null $guzzleClient
      * @param string $authUrl
      * @param string $refreshAuthUrl
      * @param string $tokenUrl
@@ -73,10 +78,11 @@ class Client
      * @param string|null $delayHeader
      * @param DelayUnit $delayUnit
      * @param bool $debugMode
-     * @throws GuzzleException
+     * @throws Exception
      */
     public function __construct(
         string $baseUrl,
+        ?GuzzleClient $guzzleClient = null,
         string $authUrl = "",
         string $refreshAuthUrl = "",
         string $tokenUrl = "",
@@ -104,6 +110,7 @@ class Client
     ) {
         // Set properties
         $this->setBaseUrl($baseUrl);
+        $this->setGuzzleClient($guzzleClient ?: new GuzzleClient());
         $this->setAuthUrl($authUrl);
         $this->setTokenUrl($tokenUrl);
         $this->setRefreshAuthUrl($refreshAuthUrl ?: $this->authUrl);
@@ -111,10 +118,6 @@ class Client
         $this->setScopes($scopes);
         $this->setUserId($userId);
         $this->setPassword($password);
-        $this->setClientId($clientId);
-        $this->setClientSecret($clientSecret);
-        $this->setRefreshToken($refreshToken);
-        $this->setRefreshTokenHeaders($refreshTokenHeaders);
         $this->setClientId($clientId);
         $this->setClientSecret($clientSecret);
         $this->setRefreshToken($refreshToken);
@@ -138,6 +141,23 @@ class Client
 
         // Validate auth type
         $this->validateAuthType();
+    }
+
+    /**
+     * @return GuzzleClient
+     */
+    public function getGuzzleClient(): GuzzleClient
+    {
+        return $this->guzzleClient;
+    }
+
+    /**
+     * @param GuzzleClient $param
+     * @return void
+     */
+    public function setGuzzleClient(GuzzleClient $param): void
+    {
+        $this->guzzleClient = $param;
     }
 
     /**
@@ -226,7 +246,7 @@ class Client
             throw new InvalidArgumentException("Base URL is required");
         }
         if (filter_var($baseUrl, FILTER_VALIDATE_URL) === FALSE) {
-            die('Invalid baseUrl parameter: "' . $baseUrl . '"');
+            throw new InvalidArgumentException('Invalid baseUrl parameter: "' . $baseUrl . '"');
         }
         $this->baseUrl = $baseUrl;
     }
@@ -246,7 +266,7 @@ class Client
     public function setAuthUrl(string $authUrl): void
     {
         if ($authUrl && filter_var($authUrl, FILTER_VALIDATE_URL) === FALSE) {
-            die('Invalid authUrl parameter: "' . $authUrl . '"');
+            throw new InvalidArgumentException('Invalid authUrl parameter: "' . $authUrl . '"');
         }
         $this->authUrl = $authUrl;
     }
@@ -266,7 +286,7 @@ class Client
     public function setRefreshAuthUrl(string $refreshAuthUrl): void
     {
         if ($refreshAuthUrl && filter_var($refreshAuthUrl, FILTER_VALIDATE_URL) === FALSE) {
-            die('Invalid refreshAuthUrl parameter: "' . $refreshAuthUrl . '"');
+            throw new InvalidArgumentException('Invalid refreshAuthUrl parameter: "' . $refreshAuthUrl . '"');
         }
         $this->refreshAuthUrl = $refreshAuthUrl;
     }
@@ -286,7 +306,7 @@ class Client
     public function setTokenUrl(string $tokenUrl): void
     {
         if ($tokenUrl && filter_var($tokenUrl, FILTER_VALIDATE_URL) === FALSE) {
-            die('Invalid tokenUrl parameter: "' . $tokenUrl . '"');
+            throw new InvalidArgumentException('Invalid tokenUrl parameter: "' . $tokenUrl . '"');
         }
         $this->tokenUrl = $tokenUrl;
     }
@@ -306,7 +326,7 @@ class Client
     public function setRedirectUrl(string $redirectUrl): void
     {
         if ($redirectUrl && filter_var($redirectUrl, FILTER_VALIDATE_URL) === FALSE) {
-            die('Invalid redirectUrl parameter: "' . $redirectUrl . '"');
+            throw new InvalidArgumentException('Invalid redirectUrl parameter: "' . $redirectUrl . '"');
         }
         $this->redirectUrl = $redirectUrl;
     }
@@ -668,8 +688,17 @@ class Client
                 }
                 break;
             case AuthType::oAuthV1:
-                if (!$this->getClientId() || !$this->getClientSecret() || !$this->getToken() || !$this->getTokenSecret()) {
-                    throw new InvalidArgumentException("Client ID, Client Secret, Token and Token Secret are required for OAuth v1");
+                if (!$this->getClientId()) {
+                    throw new InvalidArgumentException("Unauthorized. No Client ID provided.");
+                }
+                if (!$this->getClientSecret()) {
+                    throw new InvalidArgumentException("Unauthorized. No Client Secret provided.");
+                }
+                if (!$this->getToken()) {
+                    throw new InvalidArgumentException("Unauthorized. No Token provided.");
+                }
+                if (!$this->getTokenSecret()) {
+                    throw new InvalidArgumentException("Unauthorized. No Token Secret provided.");
                 }
                 if (!isset($this->getAuthSettings()['location'])) {
                     throw new InvalidArgumentException("Location is required for OAuth v1 authentication.");
@@ -679,8 +708,14 @@ class Client
                 }
                 break;
             case AuthType::oAuthV2:
-                if (!$this->getClientId() || !$this->getClientSecret() || !$this->getRefreshToken()) {
-                    throw new InvalidArgumentException("Client ID, Client Secret, and Refresh Token are required for OAuth v2");
+                if (!$this->getClientId()) {
+                    throw new InvalidArgumentException("Unauthorized. No Client ID provided.");
+                }
+                if (!$this->getClientSecret()) {
+                    throw new InvalidArgumentException("Unauthorized. No Client Secret provided.");
+                }
+                if (!$this->getRefreshToken()) {
+                    throw new InvalidArgumentException("Unauthorized. No refresh token provided.");
                 }
                 if (!isset($this->getAuthSettings()['location'])) {
                     throw new InvalidArgumentException("Location is required for OAuth v2 authentication.");
@@ -698,12 +733,15 @@ class Client
                 }
                 break;
             case AuthType::basic:
-                if (!$this->getToken()) {
-                    throw new InvalidArgumentException("Valid credentials are required for Basic authentication");
+                if (!$this->getUserId()) {
+                    throw new InvalidArgumentException("Valid User ID is required for Basic authentication");
+                }
+                if (!$this->getPassword()) {
+                    throw new InvalidArgumentException("Valid Password is required for Basic authentication");
                 }
                 break;
             case AuthType::none:
-                throw new Exception('To be implemented');
+                break;
         }
     }
 
@@ -810,6 +848,9 @@ class Client
      * @param array $customErrors
      * @param bool $ignoreAuth
      * @return Response
+     * @throws ApiRequestException
+     * @throws AuthenticationException
+     * @throws DebugException
      * @throws GuzzleException
      * @throws Exception
      */
@@ -832,7 +873,6 @@ class Client
         array $customErrors = [], // Ex: ['403' => 'body'] or ['500' => 'code'] or ['404' => 'message']
         bool $ignoreAuth = false,
     ): Response {
-
         $params = [
             'query' => $query,
             'headers' => !empty($headers) ? $headers : $this->headers,
@@ -877,6 +917,8 @@ class Client
             );
         }
 
+        $guzzle = $this->guzzleClient ?? new GuzzleClient();
+
         try {
             if ($this->getDebugMode()) {
                 $request = new Request(
@@ -898,11 +940,10 @@ class Client
                 if ($this->getAuthType() == AuthType::oAuthV1) {
                     $debugData['oauth_debug_data'] = $this->getDebugData();
                 }
-                die(
-                json_encode($debugData, JSON_PRETTY_PRINT)
-                );
+                $this->addDebugData(debugData: $debugData);
+                throw new DebugException(json_encode($this->getDebugData(), JSON_PRETTY_PRINT));
             }
-            return (new GuzzleClient())->request(
+            return $guzzle->request(
                 method: $method,
                 uri: ($baseUrl ?: $this->getBaseUrl()).$endpoint,
                 options: $params,
@@ -910,7 +951,6 @@ class Client
         } catch (RequestException $e) {
             // Exponential or custom back-off for rate limit
             if ($e->getCode() == 429) {
-
                 if ($e->hasResponse() && ($delayHeader = $this->getDelayHeader())) {
                     $dynamicSleep = $e->getResponse()->getHeader($delayHeader) *
                         match($this->getDelayUnit()) {
@@ -939,23 +979,35 @@ class Client
             }
 
             if ($e->getCode() != 401) {
-                die(self::getErrorMessage(exception: $e, errorMessageNesting: $errorMessageNesting));
+                throw new ApiRequestException(
+                    self::getErrorMessage(exception: $e, errorMessageNesting: $errorMessageNesting),
+                    $e->getCode(),
+                    $e
+                );
             }
 
             if (in_array($e->getCode(), array_keys($customErrors))) {
-                match($customErrors[$e->getCode()]) {
-                    'body' => die($e->getResponse()->getBody()->getContents()),
-                    'code' => die($e->getCode()),
-                    'message' => die($e->getMessage()),
-                };
+                throw new ApiRequestException(
+                    match($customErrors[$e->getCode()]) {
+                        'body' => $e->getResponse()->getBody()->getContents(),
+                        'code' => $e->getCode(),
+                        'message' => $e->getMessage(),
+                    },
+                    $e->getCode(),
+                    $e
+                );
             }
 
             if (!$allowNewToken || $this->authType != AuthType::oAuthV2) {
-                die(self::getErrorMessage(exception: $e, errorMessageNesting: $errorMessageNesting));
+                throw new AuthenticationException(
+                    self::getErrorMessage(exception: $e, errorMessageNesting: $errorMessageNesting),
+                    $e->getCode(),
+                    $e
+                );
             }
 
             if (!$this->getRefreshToken()) {
-                die("Unauthorized. No refresh token provided.");
+                throw new AuthenticationException("Unauthorized. No refresh token provided.", 401);
             }
 
             $this->setToken($this->getNewToken());
@@ -970,15 +1022,18 @@ class Client
             }
 
             // Retry request
-
             try {
-                return (new GuzzleClient())->request(
+                return $guzzle->request(
                     method: $method,
                     uri: ($baseUrl ?: $this->baseUrl).$endpoint,
                     options: $params,
                 );
             } catch (RequestException $e) {
-                die(self::getErrorMessage(exception: $e, errorMessageNesting: $errorMessageNesting));
+                throw new ApiRequestException(
+                    self::getErrorMessage(exception: $e, errorMessageNesting: $errorMessageNesting),
+                    $e->getCode(),
+                    $e
+                );
             }
         }
     }
