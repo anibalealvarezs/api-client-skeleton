@@ -126,15 +126,12 @@ class Client
         $this->setHeaders($defaultHeaders);
         $this->setApiKey($apiKey);
         $this->setAuthType($authType);
-        $this->setToken($authType == AuthType::oAuthV2 && !$token ? $this->getNewToken() : $token);
+        $this->setToken($token);
         $this->setTokenSecret($tokenSecret);
         $this->setVersion($version);
         $this->setRealm($realm);
         $this->setEncodeParams($encodeParams);
         $this->setSignatureMethod($signatureMethod);
-        if ($authType == AuthType::oAuthV1) {
-            $this->setOAuthV1();
-        }
         $this->setDelayHeader($delayHeader);
         $this->setDelayUnit($delayUnit);
         $this->setDebugMode($debugMode);
@@ -770,6 +767,7 @@ class Client
                 if ($this->getAuthSettings()['location'] == 'query') {
                     $params['query'][$this->getAuthSettings()['name']] = $this->getApiKey();
                 } else if ($this->getAuthSettings()['location'] == 'header') {
+                    $this->setOAuthV1();
                     $authorizationHeader = $this->getOAuthV1()
                         ->setTimestamp(timestamp: time())
                         ->getAuthorizationHeader(
@@ -788,6 +786,9 @@ class Client
                 if ($this->getAuthSettings()['location'] == 'query') {
                     $params['query'][$this->getAuthSettings()['name']] = $this->getApiKey();
                 } else if ($this->getAuthSettings()['location'] == 'header') {
+                    if (!$this->getToken()) {
+                        $this->setToken($this->getNewToken());
+                    }
                     $params['headers']['Authorization'] = ($this->getAuthSettings()['headerPrefix'] ?? '') . $this->getToken();
                 }
                 break;
