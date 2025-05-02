@@ -6,7 +6,7 @@ use Anibalealvarezs\ApiSkeleton\Client;
 use Anibalealvarezs\ApiSkeleton\Enums\AuthType;
 use Anibalealvarezs\ApiSkeleton\Enums\DelayUnit;
 use Anibalealvarezs\OAuthV1\Enums\SignatureMethod;
-use GuzzleHttp\Exception\GuzzleException;
+use Exception;
 
 class OAuthV1Client extends Client
 {
@@ -23,7 +23,8 @@ class OAuthV1Client extends Client
      * @param SignatureMethod $signatureMethod
      * @param string|null $delayHeader
      * @param DelayUnit $delayUnit
-     * @throws GuzzleException
+     * @param Client|null $guzzleClient
+     * @throws Exception
      */
     function __construct(
         string $baseUrl,
@@ -37,9 +38,11 @@ class OAuthV1Client extends Client
         SignatureMethod $signatureMethod = SignatureMethod::HMAC_SHA1,
         ?string $delayHeader = null,
         DelayUnit $delayUnit = DelayUnit::second,
+        ?Client $guzzleClient = null,
     ) {
         return parent::__construct(
             baseUrl: $baseUrl,
+            guzzleClient: $guzzleClient,
             clientId: $consumerId,
             clientSecret: $consumerSecret,
             defaultHeaders: $defaultHeaders,

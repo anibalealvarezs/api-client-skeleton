@@ -27,6 +27,7 @@ class OAuthV2Client extends Client
      * @param string $token
      * @param string|null $delayHeader
      * @param DelayUnit $delayUnit
+     * @param Client|null $guzzleClient
      * @throws Exception
      */
     function __construct(
@@ -46,9 +47,11 @@ class OAuthV2Client extends Client
         string $token = "",
         ?string $delayHeader = null,
         DelayUnit $delayUnit = DelayUnit::second,
+        ?Client $guzzleClient = null,
     ) {
         return parent::__construct(
             baseUrl: $baseUrl,
+            guzzleClient: $guzzleClient,
             authUrl: $authUrl,
             refreshAuthUrl: $refreshAuthUrl,
             tokenUrl: $tokenUrl,

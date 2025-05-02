@@ -5,7 +5,7 @@ namespace Anibalealvarezs\ApiSkeleton\Clients;
 use Anibalealvarezs\ApiSkeleton\Client;
 use Anibalealvarezs\ApiSkeleton\Enums\AuthType;
 use Anibalealvarezs\ApiSkeleton\Enums\DelayUnit;
-use GuzzleHttp\Exception\GuzzleException;
+use Exception;
 
 class NoAuthClient extends Client
 {
@@ -18,7 +18,8 @@ class NoAuthClient extends Client
      * @param string $token
      * @param string|null $delayHeader
      * @param DelayUnit $delayUnit
-     * @throws GuzzleException
+     * @param Client|null $guzzleClient
+     * @throws Exception
      */
     function __construct(
         string $baseUrl,
@@ -28,9 +29,11 @@ class NoAuthClient extends Client
         string $token = "",
         ?string $delayHeader = null,
         DelayUnit $delayUnit = DelayUnit::second,
+        ?Client $guzzleClient = null,
     ) {
         return parent::__construct(
             baseUrl: $baseUrl,
+            guzzleClient: $guzzleClient,
             defaultHeaders: $defaultHeaders,
             userId: $userId,
             scopes: $scopes,
