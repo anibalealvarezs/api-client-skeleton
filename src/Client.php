@@ -741,8 +741,9 @@ class Client
      * @param string $endpoint
      * @param string $baseUrl
      * @throws Exception
+     * @throws GuzzleException
      */
-    protected function setAuth(
+    public function setAuth(
         array &$params,
         string $method = "",
         string $endpoint = "",
@@ -800,7 +801,7 @@ class Client
      * @return string|null
      * @throws GuzzleException
      */
-    protected function getNewToken(): ?string
+    public function getNewToken(): ?string
     {
         $body = [
             "client_id" => $this->getClientId(),
