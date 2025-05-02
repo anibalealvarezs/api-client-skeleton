@@ -789,7 +789,7 @@ class Client
                 $params['headers']['Authorization'] = ($this->getAuthSettings()['headerPrefix'] ?? 'Bearer ') . $this->getToken();
                 break;
             case AuthType::basic:
-                $params['headers']['Authorization'] = ($this->getAuthSettings()['headerPrefix'] ?? 'Basic ') . $this->getToken();
+                $params['headers']['Authorization'] = ($this->getAuthSettings()['headerPrefix'] ?? 'Basic ') . base64_encode($this->getUserId() . ':' . $this->getPassword());
                 break;
             case AuthType::none:
                 break;
@@ -921,7 +921,6 @@ class Client
                     headers: $params['headers'],
                     body: $params['body'] ?? (isset($params['form_params']) ? http_build_query($params['form_params'], '', '&') : null),
                 );
-                header('Content-Type: application/json');
                 $debugData = [
                     'method' => $request->getMethod(),
                     'query_params' => $params['query'],
