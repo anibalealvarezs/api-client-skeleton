@@ -625,7 +625,7 @@ class Client
      * @param bool $debugMode
      * @return void
      */
-    private function setDebugMode(bool $debugMode): void
+    public function setDebugMode(bool $debugMode): void
     {
         $this->debugMode = $debugMode;
     }
@@ -648,19 +648,12 @@ class Client
     }
 
     /**
+     * @param array $debugData
      * @return void
      */
-    public function turnDebugModeOn(): void
+    public function addDebugData(array $debugData): void
     {
-        $this->setDebugMode(true);
-    }
-
-    /**
-     * @return void
-     */
-    private function turnDebugModeOff(): void
-    {
-        $this->setDebugMode(false);
+        $this->setDebugData([...$this->debugData, ...$debugData]);
     }
 
     /**
@@ -778,7 +771,7 @@ class Client
                         );
                     $params['headers']['Authorization'] = $authorizationHeader['string'];
                     if ($this->getDebugMode()) {
-                        $this->setDebugData(debugData: $authorizationHeader['debugData']);
+                        $this->addDebugData(debugData: $authorizationHeader['debugData']);
                     }
                 }
                 break;
