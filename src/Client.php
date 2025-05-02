@@ -380,6 +380,16 @@ class Client
     }
 
     /**
+     * @param string $clientSecret
+     * @return void
+     */
+    public function updateClientSecret(string $clientSecret): void
+    {
+        $this->setClientSecret($clientSecret);
+        $this->setToken('');
+    }
+
+    /**
      * @return string
      */
     public function getRefreshToken(): string
@@ -394,6 +404,16 @@ class Client
     public function setRefreshToken(string $refreshToken): void
     {
         $this->refreshToken = $refreshToken;
+    }
+
+    /**
+     * @param string $refreshToken
+     * @return void
+     */
+    public function updateRefreshToken(string $refreshToken): void
+    {
+        $this->setRefreshToken($refreshToken);
+        $this->setToken('');
     }
 
     /**
