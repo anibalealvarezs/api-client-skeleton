@@ -5,7 +5,7 @@ namespace Anibalealvarezs\ApiSkeleton\Clients;
 use Anibalealvarezs\ApiSkeleton\Client;
 use Anibalealvarezs\ApiSkeleton\Enums\AuthType;
 use Anibalealvarezs\ApiSkeleton\Enums\DelayUnit;
-use GuzzleHttp\Exception\GuzzleException;
+use Exception;
 
 class OAuthV2Client extends Client
 {
@@ -27,7 +27,7 @@ class OAuthV2Client extends Client
      * @param string $token
      * @param string|null $delayHeader
      * @param DelayUnit $delayUnit
-     * @throws GuzzleException
+     * @throws Exception
      */
     function __construct(
         string $baseUrl,
