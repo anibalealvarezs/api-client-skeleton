@@ -1,8 +1,14 @@
-# API Skeleton
+# API Skeleton - Methods Documentation
+
+This document extends the usage instructions for the `Client` class in the `anibalealvarezs/api-client-skeleton` package, focusing on public methods for authentication and request handling.
+
+Configuration methods (setters and getters) are documented in a separate file ([API Skeleton - Configuration Methods Documentation](docs/Configuration/README.MD)).
+
+Check [this file](docs/Tests/README.MD) for documentation regarding the package's tests.
 
 ## Installation Instructions
 
-Require the package in the `composer.json` file of your project, and map the package in the `repositories` section (including its dependencies).
+Require the package in the `composer.json` file of your project, and map the package in the `repositories` section.
 
 ```json
 {
@@ -12,18 +18,11 @@ Require the package in the `composer.json` file of your project, and map the pac
     },
     "repositories": [
         {
-            "type": "git",
-            "url": "git@github.com:anibalealvarezs/api-client-skeleton.git"
-        },
-        {
-            "type": "git",
-            "url": "git@github.com:anibalealvarezs/oauthv-1.git"
+          "type": "composer", "url": "https://satis.anibalalvarez.com/"
         }
     ]
 }
 ```
-
-Note: In order to require the package, you need to have a valid SSH key configured in your CHMW's GitLab account.
 
 ## Usage
 
@@ -88,27 +87,27 @@ class MyApi extends \Anibalealvarezs\ApiSkeleton\Clients\ApiKeyClient
 }
 ```
 
-Required parameters:
+**Required parameters:**
 - `baseUrl`: *String*  
   Base URL for API requests.
 - `apiKey`: *String*  
   API key to be used for authentication.
 - `authSettings`: *Array*  
   Authentication settings.  
-    Required keys:
-    - `location`: *String*  
-      Location of the API key. Possible values: `header` or `query`.
-    - `name`: *String*  
-      Name of the header or query parameter that will contain the API key.
-    Optional keys:
-    - `headerPrefix`: *String*  
-      Prefix to be added to the header value.  
-      Example: `Bearer `  
-      Notes:  
-        This key is only required if `location` is set to `header`.  
-        Include a trailing space if you want to separate the prefix from the value with a space.  
+  **Required keys:**
+  - `location`: *String*  
+    Location of the API key. Possible values: `header` or `query`.
+  - `name`: *String*  
+    Name of the header or query parameter that will contain the API key.
+    **Optional keys:**
+  - `headerPrefix`: *String*  
+    Prefix to be added to the header value.  
+    Example: `Bearer `  
+    Notes:  
+    This key is only required if `location` is set to `header`.  
+    Include a trailing space if you want to separate the prefix from the value with a space.
 
-Optional parameters:
+**Optional parameters:**
 - `defaultHeaders`: *Array*  
   Default headers that will be sent along with all requests (unless overridden on any method).  
   Example: `['Content-Type' => 'application/json']`
@@ -138,20 +137,20 @@ class MyApi extends \Anibalealvarezs\ApiSkeleton\Clients\BearerTokenClient
 }
 ```
 
-Required parameters:
+**Required parameters:**
 - `baseUrl`: *String*  
   Base URL for API requests.
 - `token`: *String*  
   Token to be used for authentication.
 - `authSettings`: *Array*  
   Authentication settings.  
-    Optional keys:
-    - `headerPrefix`: *String*  
-      Prefix to be added to the header value.  
-      Example: `Bearer `  
-      Note: Include a trailing space if you want to separate the prefix from the value with a space.
+  **Optional keys:**
+  - `headerPrefix`: *String*  
+    Prefix to be added to the header value.  
+    Example: `Bearer `  
+    Note: Include a trailing space if you want to separate the prefix from the value with a space.
 
-Optional parameters:
+**Optional parameters:**
 - `defaultHeaders`: *Array*  
   Default headers that will be sent along with all requests (unless overridden on any method).  
   Example: `['Content-Type' => 'application/json']`
@@ -203,7 +202,7 @@ class MyApi extends \Anibalealvarezs\ApiSkeleton\Clients\OAuthV1Client
 }
 ```
 
-Required parameters:
+**Required parameters:**
 - `baseUrl`: *String*  
   Base URL for API requests.
 - `clientId`: *String*  
@@ -212,14 +211,14 @@ Required parameters:
   Consumer Secret to be used for the OAuth flow.
 - `authSettings`: *Array*  
   Authentication settings.  
-  Required keys:
+  **Required keys:**
   - `location`: *String*  
     Location of the API key. Possible values: `header`, `body` or `query`.   
-  Optional keys:
+    **Optional keys:**
   - `name`: *String*  
     Name of the header or query parameter that will contain the API key.   
     Notes:  
-    This key is only required if `location` is set to `query`.   
+    This key is only required if `location` is set to `query`.
   - `headerPrefix`: *String*  
     Prefix to be added to the header value.  
     Example: `OAuth `  
@@ -229,7 +228,7 @@ Required parameters:
 - `token`: *String*  
   Access token to be used for authentication.
 - `tokenSecret`: *String*  
-  Token Secret to be used for authentication.
+  Token SECRET to be used for authentication.
 - `version`: *String*  
   OAuth version to be used.  
   Possible values: `1.0`, `1.0a` or `2.0`.  
@@ -238,7 +237,7 @@ Required parameters:
   Realm to be used for the OAuth flow.  
   Default value: `""`
 
-Optional parameters:
+**Optional parameters:**
 - `defaultHeaders`: *Array*  
   Default headers that will be sent along with all requests (unless overridden on any method).  
   Example: `['Content-Type' => 'application/json']`
@@ -292,14 +291,14 @@ class MyApi extends \Anibalealvarezs\ApiSkeleton\Clients\OAuthV2Client
 }
 ```
 
-Required parameters:
+**Required parameters:**
 - `baseUrl`: *String*  
   Base URL for API requests.
 - `authUrl`: *String*  
   URL to be used for the OAuth authorization flow.
 - `tokenUrl`: *String*  
   URL to be used for the OAuth token flow.
-- `refreshAuthUrl`: *String*  
+- `refreshAuth sunUrl`: *String*  
   URL to be used for the OAuth refresh token flow (if different from `authUrl`). Can be `null` if the refresh token flow is not supported.
 - `redirectUrl`: *String*  
   URL to be used as the redirect URL for the OAuth flow.
@@ -311,12 +310,12 @@ Required parameters:
   Refresh token to refresh the access token.
 - `authSettings`: *Array*  
   Authentication settings.  
-  Required keys:
+  **Required keys:**
   - `location`: *String*  
     Location of the API key. Possible values: `header` or `query`.
   - `name`: *String*  
     Name of the header or query parameter that will contain the API key.   
-  Optional keys:
+    **Optional keys:**
   - `headerPrefix`: *String*  
     Prefix to be added to the header value.  
     Example: `Bearer `  
@@ -324,7 +323,7 @@ Required parameters:
     This key is only required if `location` is set to `header`.  
     Include a trailing space if you want to separate the prefix from the value with a space.
 
-Optional parameters:
+**Optional parameters:**
 - `defaultHeaders`: *Array*  
   Default headers that will be sent along with all requests (unless overridden on any method).  
   Example: `['Content-Type' => 'application/json']`
@@ -336,77 +335,187 @@ Optional parameters:
 - `token`: *String*  
   Access token to be used with every request.
 
-## Endpoint Methods
+## Authentication Methods
 
-All endpoint methods must execute at the end the `performRequest()` method, which is responsible for sending the request to the API and returning the response's body.
-Example:
+The `Client` class provides public methods to handle authentication setup and token management.
 
+### `setAuth(array &$params, string $method = "", string $endpoint = "", string $baseUrl = ""): void`
+
+Configures authentication parameters for a request based on the client’s authentication type.
+
+**Parameters:**
+- `params`: *Array* (passed by reference)  
+  Request parameters (e.g., `query`, `headers`) that will be modified to include authentication details.
+- `method`: *String* (optional)  
+  HTTP method for the request (e.g., `GET`, `POST`). Required for OAuth v1.
+- `endpoint`: *String* (optional)  
+  API endpoint for the request (e.g., `entity/count.json`). Required for OAuth v1.
+- `baseUrl`: *String* (optional)  
+  Base URL for the request. Defaults to the client’s base URL.
+
+**Throws:**
+- `Exception`: If authentication setup fails due to invalid settings or missing credentials.
+
+**Example:**
 ```php
-    public function getEntityCount(
-        // Optional parameters
-    ): array {
-        $query =[
-            // Query parameters
-        ];
-
-        // Request the spreadsheet data
-        $response = $this->performRequest(
-            method: "GET",
-            endpoint: "entity/count.json",
-            query: $query,
-        );
-        // Return response
-        return json_decode($response->getBody()->getContents(), true);
-    }
+$params = ['query' => [], 'headers' => []];
+$client->setAuth($params, 'GET', 'entity/count.json');
 ```
 
-### performRequest() method parameters:
+---
 
-Required parameters:
+### `getNewToken(): ?string`
+
+Fetches a new access token using the refresh token for OAuth v2 authentication.
+
+struttural integrity
+
+**Returns:**
+- *String|null*: The new access token or `null` if the request fails.
+
+**Throws:**
+- `GuzzleException`: If the token request fails.
+
+**Example:**
+```php
+$newToken = $client->getNewToken();
+```
+
+---
+
+## Request Handling Methods
+
+The `Client` class provides public methods to perform and manage API requests.
+
+### `performRequest(...)`
+
+Sends an HTTP request to the specified API endpoint and handles authentication, retries, and error responses.
+
+**Parameters:**
+
+**Required:**
 - `method`: *String*  
-  HTTP method to be used for the request.  
-  Possible values: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`.
+  HTTP method to be used for the request (e.g., `GET`, `POST`, `PUT`, `PATCH`, `DELETE`).
 - `endpoint`: *String*  
-  Endpoint to be used for the request.  
-  Example: `entity/count.json`
+  Endpoint for the request (e.g., `entity/count.json`).
 
-Optional parameters:
+**Optional:**
 - `query`: *Array*  
-  Query parameters to be sent along with the request.  
-  Example: `['limit' => 10]`
-- `body`: *Array*  
-  Body parameters to be sent along with the request.  
-  Example: `['name' => 'John Doe']`
-- `formParams`: *Array*  
-  Form parameters to be sent along with the request.  
-  Example: `['name' => 'John Doe']`
+  Query parameters for the request (e.g., `['limit' => 10]`).
+- `body`: *String|Array*  
+  Request body (e.g., JSON string or array of parameters).
+- `form_params`: *Array*  
+  Form parameters for the request (e.g., `['name' => 'John Doe']`).
 - `baseUrl`: *String*  
-  Base URL to be used for the request.  
-  Example: `https://my.api.url/`
+  Base URL for the request. Defaults to the client’s base URL.
 - `headers`: *Array*  
-  Headers to be sent along with the request.  
-  Example: `['Content-Type' => 'application/json']`
+  Headers for the request (e.g., `['Content-Type' => 'application/json']`).
 - `additionalHeaders`: *Array*  
-  Additional headers to be appended to the current list of headers.  
-  Example: `['Content-Type' => 'application/json']`
-- `cookies`: *Array*  
-  Cookies to be sent along with the request.  
-  Example: `['name' => 'John Doe']`
+  Additional headers to append to the request headers.
+- `cookies`: *CookieJar|null*  
+  Cookies to be sent with the request.
 - `verify`: *Boolean*  
-  Whether to verify the SSL certificate or not.  
-  Example: `true`
+  Whether to verify the SSL certificate (default: `false`).
 - `allowNewToken`: *Boolean*  
-  Whether to allow a new token to be generated or not.  
-  Example: `true`
+  Whether to allow automatic token refresh for OAuth v2 (default: `true`).
 - `pathToSave`: *String*  
-  Local path to save the file to.  
-  Example: `/path/to/save/file`
-- `stream`: *Boolean*  
-  Whether to stream the response or not.  
-  Example: `true`
-- `errorMessageNesting`: *Array*  
-  Keys to be used to get the error message from the response.
-  Example: `['error' => ['message']]`
+  Local path to save the response (e.g., `/path/to/save/file`).
+- `stream`: *Boolean|null*  
+  Whether to stream the response.
+- `errorMessageNesting`: *Array|null*  
+  Keys to extract error messages from the response (e.g., `['error' => 'message']`).
 - `sleep`: *Integer*  
-  Number of seconds to wait before retrying the request.  
-  Example: `5`
+  Microseconds to wait before retrying (default: `0`).
+- `customErrors`: *Array*  
+  Custom error mappings for specific HTTP status codes.
+- `ignoreAuth`: *Boolean*  
+  Whether to skip authentication for the request (default: `false`).
+
+**Returns:**
+- *Response*: The Guzzle HTTP response object.
+
+**Throws:**
+- `ApiRequestException`: For general request errors.
+- `AuthenticationException`: For authentication failures.
+- `DebugException`: When debug mode is enabled, containing debug data.
+- `GuzzleException`: For Guzzle-related errors.
+- `Exception`: For other unexpected errors.
+
+**Example:**
+```php
+$response = $client->performRequest(
+    method: 'GET',
+    endpoint: 'entity/count.json',
+    query: ['limit' => 10],
+    headers: ['Content-Type' => 'application/json']
+);
+return json_decode($response->getBody()->getContents(), true);
+```
+
+---
+
+## Endpoint Methods
+
+All endpoint methods must execute the `performRequest()` method at the end, which is responsible for sending the request to the API and returning the response's body.
+
+**Example:**
+```php
+public function getEntityCount(
+    // Optional parameters
+): array {
+    $query = [
+        // Query parameters
+    ];
+
+    // Request the spreadsheet data
+    $response = $this->performRequest(
+        method: "GET",
+        endpoint: "entity/count.json",
+        query: $query,
+    );
+    // Return response
+    return json_decode($response->getBody()->getContents(), true);
+}
+```
+
+---
+
+## Usage Example
+
+Below is an example of creating a custom API client that extends `ApiKeyClient` and uses the authentication and request handling methods:
+
+```php
+class MyApi extends \Anibalealvarezs\ApiSkeleton\Clients\ApiKeyClient
+{
+    public function __construct(string $apiKey)
+    {
+        parent::__construct(
+            baseUrl: 'https://my.api.url/',
+            apiKey: $apiKey,
+            authSettings: [
+                'location' => 'header',
+                'name' => 'Authorization',
+                'headerPrefix' => 'Bearer '
+            ],
+            defaultHeaders: [
+                'Content-Type' => 'application/json'
+            ]
+        );
+    }
+
+    public function getEntityCount(int $limit = 10): array
+    {
+        $query = ['limit' => $limit];
+        $response = $this->performRequest(
+            method: 'GET',
+            endpoint: 'entity/count.json',
+            query: $query
+        );
+        return json_decode($response->getBody()->getContents(), true);
+    }
+}
+```
+
+This example demonstrates how to configure the client with an API key and define a custom endpoint method that uses `performRequest` to fetch data.
+
+---
