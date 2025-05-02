@@ -5,6 +5,7 @@ namespace Anibalealvarezs\ApiSkeleton\Clients;
 use Anibalealvarezs\ApiSkeleton\Client;
 use Anibalealvarezs\ApiSkeleton\Enums\DelayUnit;
 use Exception;
+use GuzzleHttp\Client as GuzzleClient;
 
 class ApiKeyClient extends Client
 {
@@ -16,7 +17,7 @@ class ApiKeyClient extends Client
      * @param array $defaultHeaders
      * @param string|null $delayHeader
      * @param DelayUnit $delayUnit
-     * @param Client|null $guzzleClient
+     * @param GuzzleClient|null $guzzleClient
      * @throws Exception
      */
     function __construct(
@@ -26,7 +27,7 @@ class ApiKeyClient extends Client
         array $defaultHeaders = [],
         ?string $delayHeader = null,
         DelayUnit $delayUnit = DelayUnit::second,
-        ?Client $guzzleClient = null,
+        ?GuzzleClient $guzzleClient = null,
     ) {
         return parent::__construct(
             baseUrl: $baseUrl,

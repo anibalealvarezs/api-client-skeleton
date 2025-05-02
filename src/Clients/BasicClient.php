@@ -7,6 +7,7 @@ use Anibalealvarezs\ApiSkeleton\Enums\AuthType;
 use Anibalealvarezs\ApiSkeleton\Enums\DelayUnit;
 use Anibalealvarezs\ApiSkeleton\Enums\EncodingMethod;
 use Exception;
+use GuzzleHttp\Client as GuzzleClient;
 
 class BasicClient extends Client
 {
@@ -20,7 +21,7 @@ class BasicClient extends Client
      * @param array $defaultHeaders
      * @param string|null $delayHeader
      * @param DelayUnit $delayUnit
-     * @param Client|null $guzzleClient
+     * @param GuzzleClient|null $guzzleClient
      * @throws Exception
      */
     function __construct(
@@ -32,7 +33,7 @@ class BasicClient extends Client
         array $defaultHeaders = [],
         ?string $delayHeader = null,
         DelayUnit $delayUnit = DelayUnit::second,
-        ?Client $guzzleClient = null,
+        ?GuzzleClient $guzzleClient = null,
     ) {
         return parent::__construct(
             baseUrl: $baseUrl,
