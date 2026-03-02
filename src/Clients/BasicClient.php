@@ -35,7 +35,7 @@ class BasicClient extends Client
         DelayUnit $delayUnit = DelayUnit::second,
         ?GuzzleClient $guzzleClient = null,
     ) {
-        return parent::__construct(
+        parent::__construct(
             baseUrl: $baseUrl,
             guzzleClient: $guzzleClient,
             defaultHeaders: $defaultHeaders,

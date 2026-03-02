@@ -14,7 +14,7 @@ use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Response;
+use Psr\Http\Message\ResponseInterface;
 use GuzzleHttp\Psr7\Utils;
 use InvalidArgumentException;
 use Anibalealvarezs\OAuthV1\OAuthV1;
@@ -783,7 +783,7 @@ class Client
                 } else if ($this->getAuthSettings()['location'] == 'header') {
                     $this->setOAuthV1();
                     $authorizationHeader = $this->getOAuthV1()
-                        ->setTimestamp(timestamp: time())
+                        ->setTimestamp(timestamp: (string) time())
                         ->getAuthorizationHeader(
                             method: $method,
                             url: ($baseUrl ?: $this->getBaseUrl()) . $endpoint,
@@ -862,7 +862,7 @@ class Client
      * @param int $sleep
      * @param array $customErrors
      * @param bool $ignoreAuth
-     * @return Response
+     * @return ResponseInterface
      * @throws ApiRequestException
      * @throws AuthenticationException
      * @throws DebugException
@@ -882,12 +882,12 @@ class Client
         bool $verify = false,
         bool $allowNewToken = true,
         string $pathToSave = "",
-        bool $stream = null,
+        ?bool $stream = null,
         ?array $errorMessageNesting = null, // Ex: ['error' => ['message']]
         int $sleep = 0,
         array $customErrors = [], // Ex: ['403' => 'body'] or ['500' => 'code'] or ['404' => 'message']
         bool $ignoreAuth = false,
-    ): Response {
+    ): ResponseInterface {
         $params = [
             'query' => $query,
             'headers' => !empty($headers) ? $headers : $this->headers,
@@ -966,7 +966,7 @@ class Client
             // Exponential or custom back-off for rate limit
             if ($e->getCode() == 429) {
                 if ($e->hasResponse() && ($delayHeader = $this->getDelayHeader())) {
-                    $dynamicSleep = $e->getResponse()->getHeader($delayHeader) *
+                    $dynamicSleep = (int) $e->getResponse()->getHeaderLine($delayHeader) *
                         match($this->getDelayUnit()) {
                             DelayUnit::second => 1000000,
                             DelayUnit::millisecond => 1000,
@@ -1004,8 +1004,9 @@ class Client
                 throw new ApiRequestException(
                     match($customErrors[$e->getCode()]) {
                         'body' => $e->getResponse()->getBody()->getContents(),
-                        'code' => $e->getCode(),
+                        'code' => (string) $e->getCode(),
                         'message' => $e->getMessage(),
+                        default => (string) $customErrors[$e->getCode()],
                     },
                     $e->getCode(),
                     $e

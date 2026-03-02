@@ -2,3 +2,5 @@
 /.idea/
 /bin/
 /config/config.yaml
+/.vscode/
+/phpstan.neon

@@ -20,7 +20,7 @@ class ApiKeyClient extends Client
      * @param GuzzleClient|null $guzzleClient
      * @throws Exception
      */
-    function __construct(
+    public function __construct(
         string $baseUrl,
         string $apiKey,
         array $authSettings,
@@ -29,7 +29,7 @@ class ApiKeyClient extends Client
         DelayUnit $delayUnit = DelayUnit::second,
         ?GuzzleClient $guzzleClient = null,
     ) {
-        return parent::__construct(
+        parent::__construct(
             baseUrl: $baseUrl,
             guzzleClient: $guzzleClient,
             defaultHeaders: $defaultHeaders,

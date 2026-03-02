@@ -41,7 +41,7 @@ class OAuthV1Client extends Client
         DelayUnit $delayUnit = DelayUnit::second,
         ?GuzzleClient $guzzleClient = null,
     ) {
-        return parent::__construct(
+        parent::__construct(
             baseUrl: $baseUrl,
             guzzleClient: $guzzleClient,
             clientId: $consumerId,
