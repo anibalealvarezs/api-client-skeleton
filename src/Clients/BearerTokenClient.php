@@ -10,7 +10,6 @@ use GuzzleHttp\Client as GuzzleClient;
 
 class BearerTokenClient extends Client
 {
-
     /**
      * @param string $baseUrl
      * @param string $token
@@ -21,7 +20,7 @@ class BearerTokenClient extends Client
      * @param GuzzleClient|null $guzzleClient
      * @throws Exception
      */
-    function __construct(
+    public function __construct(
         string $baseUrl,
         string $token,
         array $authSettings = [],

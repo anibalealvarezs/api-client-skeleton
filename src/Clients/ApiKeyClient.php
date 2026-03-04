@@ -9,7 +9,6 @@ use GuzzleHttp\Client as GuzzleClient;
 
 class ApiKeyClient extends Client
 {
-
     /**
      * @param string $baseUrl
      * @param string $apiKey

@@ -11,7 +11,6 @@ use GuzzleHttp\Client as GuzzleClient;
 
 class BasicClient extends Client
 {
-
     /**
      * @param string $baseUrl
      * @param string $username

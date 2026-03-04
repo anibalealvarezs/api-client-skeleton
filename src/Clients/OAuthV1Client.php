@@ -11,7 +11,6 @@ use GuzzleHttp\Client as GuzzleClient;
 
 class OAuthV1Client extends Client
 {
-
     /**
      * @param string $baseUrl
      * @param string $consumerId
@@ -27,7 +26,7 @@ class OAuthV1Client extends Client
      * @param GuzzleClient|null $guzzleClient
      * @throws Exception
      */
-    function __construct(
+    public function __construct(
         string $baseUrl,
         string $consumerId,
         string $consumerSecret,

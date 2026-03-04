@@ -10,7 +10,6 @@ use GuzzleHttp\Client as GuzzleClient;
 
 class NoAuthClient extends Client
 {
-
     /**
      * @param string $baseUrl
      * @param array $defaultHeaders
@@ -22,7 +21,7 @@ class NoAuthClient extends Client
      * @param GuzzleClient|null $guzzleClient
      * @throws Exception
      */
-    function __construct(
+    public function __construct(
         string $baseUrl,
         array $defaultHeaders = [],
         string $userId = "",

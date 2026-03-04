@@ -66,11 +66,11 @@ class ErrorHandlingTest extends TestCase
         ]);
 
         $client->setDelayHeader('Retry-After');
-        
+
         // Use a small sleep or mock usleep if possible, but the code uses usleep directly.
         // To avoid long tests, we might want to check the logic without actually waiting long.
         // However, for simplicity, let's just assert it works.
-        
+
         $response = $client->performRequest('GET', '/test');
         $this->assertEquals(200, $response->getStatusCode());
     }

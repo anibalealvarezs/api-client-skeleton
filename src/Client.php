@@ -252,7 +252,7 @@ class Client
         if (!$baseUrl) {
             throw new InvalidArgumentException("Base URL is required");
         }
-        if (filter_var($baseUrl, FILTER_VALIDATE_URL) === FALSE) {
+        if (filter_var($baseUrl, FILTER_VALIDATE_URL) === false) {
             throw new InvalidArgumentException('Invalid baseUrl parameter: "' . $baseUrl . '"');
         }
         $this->baseUrl = $baseUrl;
@@ -272,7 +272,7 @@ class Client
      */
     public function setAuthUrl(string $authUrl): void
     {
-        if ($authUrl && filter_var($authUrl, FILTER_VALIDATE_URL) === FALSE) {
+        if ($authUrl && filter_var($authUrl, FILTER_VALIDATE_URL) === false) {
             throw new InvalidArgumentException('Invalid authUrl parameter: "' . $authUrl . '"');
         }
         $this->authUrl = $authUrl;
@@ -292,7 +292,7 @@ class Client
      */
     public function setRefreshAuthUrl(string $refreshAuthUrl): void
     {
-        if ($refreshAuthUrl && filter_var($refreshAuthUrl, FILTER_VALIDATE_URL) === FALSE) {
+        if ($refreshAuthUrl && filter_var($refreshAuthUrl, FILTER_VALIDATE_URL) === false) {
             throw new InvalidArgumentException('Invalid refreshAuthUrl parameter: "' . $refreshAuthUrl . '"');
         }
         $this->refreshAuthUrl = $refreshAuthUrl;
@@ -312,7 +312,7 @@ class Client
      */
     public function setTokenUrl(string $tokenUrl): void
     {
-        if ($tokenUrl && filter_var($tokenUrl, FILTER_VALIDATE_URL) === FALSE) {
+        if ($tokenUrl && filter_var($tokenUrl, FILTER_VALIDATE_URL) === false) {
             throw new InvalidArgumentException('Invalid tokenUrl parameter: "' . $tokenUrl . '"');
         }
         $this->tokenUrl = $tokenUrl;
@@ -332,7 +332,7 @@ class Client
      */
     public function setRedirectUrl(string $redirectUrl): void
     {
-        if ($redirectUrl && filter_var($redirectUrl, FILTER_VALIDATE_URL) === FALSE) {
+        if ($redirectUrl && filter_var($redirectUrl, FILTER_VALIDATE_URL) === false) {
             throw new InvalidArgumentException('Invalid redirectUrl parameter: "' . $redirectUrl . '"');
         }
         $this->redirectUrl = $redirectUrl;
@@ -834,14 +834,14 @@ class Client
             case AuthType::apiKey:
                 if ($this->getAuthSettings()['location'] == 'query') {
                     $params['query'][$this->getAuthSettings()['name']] = $this->getApiKey();
-                } else if ($this->getAuthSettings()['location'] == 'header') {
+                } elseif ($this->getAuthSettings()['location'] == 'header') {
                     $params['headers'][$this->getAuthSettings()['name']] = ($this->getAuthSettings()['headerPrefix'] ?? '') . $this->getApiKey();
                 }
                 break;
             case AuthType::oAuthV1:
                 if ($this->getAuthSettings()['location'] == 'query') {
                     $params['query'][$this->getAuthSettings()['name']] = $this->getApiKey();
-                } else if ($this->getAuthSettings()['location'] == 'header') {
+                } elseif ($this->getAuthSettings()['location'] == 'header') {
                     $this->setOAuthV1();
                     $authorizationHeader = $this->getOAuthV1()
                         ->setTimestamp(timestamp: (string) time())
@@ -860,7 +860,7 @@ class Client
             case AuthType::oAuthV2:
                 if ($this->getAuthSettings()['location'] == 'query') {
                     $params['query'][$this->getAuthSettings()['name']] = $this->getApiKey();
-                } else if ($this->getAuthSettings()['location'] == 'header') {
+                } elseif ($this->getAuthSettings()['location'] == 'header') {
                     if (!$this->getToken()) {
                         $this->setToken($this->getNewToken());
                     }
@@ -1217,8 +1217,9 @@ class Client
         // 3. Candidate paths (strings or dot notation)
         $candidates = (array) $parser;
         foreach ($candidates as $path) {
-            if (!is_string($path))
+            if (!is_string($path)) {
                 continue;
+            }
             $val = self::getValueByPath($data, $path);
             if ($val && (is_string($val) || is_numeric($val))) {
                 return (string) $val;
@@ -1303,7 +1304,7 @@ class Client
 
         // 2. Dot notation check
         $val = self::getValueByPath($data, (string) $detector);
-        
+
         // If the key exists:
         // - if it's "success" and it's false, it's an error.
         // - if it's "error" and it's truthy, it's an error.
