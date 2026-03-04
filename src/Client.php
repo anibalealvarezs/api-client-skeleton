@@ -848,7 +848,7 @@ class Client
                         ->getAuthorizationHeader(
                             method: $method,
                             url: ($baseUrl ?: $this->getBaseUrl()) . $endpoint,
-                            queryParams: $params['query'],
+                            queryParams: $params['query'] ?? [],
                             prefix: ($this->getAuthSettings()['headerPrefix'] ?? 'OAuth '),
                         );
                     $params['headers']['Authorization'] = $authorizationHeader['string'];
@@ -951,10 +951,12 @@ class Client
         mixed $onFailure = null,
     ): mixed {
         $params = [
-            'query' => $query,
             'headers' => !empty($headers) ? $headers : $this->headers,
             'verify' => $verify
         ];
+        if (!empty($query)) {
+            $params['query'] = $query;
+        }
 
         if (!empty($additionalHeaders)) {
             foreach ($additionalHeaders as $key => $value) {
@@ -1006,8 +1008,8 @@ class Client
                 );
                 $debugData = [
                     'method' => $request->getMethod(),
-                    'query_params' => $params['query'],
-                    'uri' => $request->getUri()->withQuery(http_build_query($params['query'], '', '&', PHP_QUERY_RFC3986)),
+                    'query_params' => $params['query'] ?? [],
+                    'uri' => $request->getUri()->withQuery(http_build_query($params['query'] ?? [], '', '&', PHP_QUERY_RFC3986)),
                     'headers' => $request->getHeaders(),
                     'body' => $request->getBody()->getContents(),
                     'target' => $request->getRequestTarget(),
