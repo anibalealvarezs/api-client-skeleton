@@ -24,7 +24,7 @@ class BasicClient extends Client
      * @param GuzzleClient|null $guzzleClient
      * @throws Exception
      */
-    function __construct(
+    public function __construct(
         string $baseUrl,
         string $username,
         string $password,

@@ -49,6 +49,9 @@ class Client
     protected DelayUnit $delayUnit = DelayUnit::second;
     protected bool $debugMode = false;
     protected array $debugData = [];
+    protected mixed $errorMessageParser = null;
+    protected mixed $responseErrorDetector = null;
+    protected mixed $failureHandler = null;
 
     /**
      * Client constructor.
@@ -78,6 +81,7 @@ class Client
      * @param string|null $delayHeader
      * @param DelayUnit $delayUnit
      * @param bool $debugMode
+     * @param mixed $errorMessageParser
      * @throws Exception
      */
     public function __construct(
@@ -107,6 +111,9 @@ class Client
         ?string $delayHeader = null,
         DelayUnit $delayUnit = DelayUnit::second,
         bool $debugMode = false,
+        mixed $errorMessageParser = null,
+        mixed $failureHandler = null,
+        mixed $responseErrorDetector = null,
     ) {
         // Set properties
         $this->setBaseUrl($baseUrl);
@@ -135,6 +142,9 @@ class Client
         $this->setDelayHeader($delayHeader);
         $this->setDelayUnit($delayUnit);
         $this->setDebugMode($debugMode);
+        $this->setErrorMessageParser($errorMessageParser);
+        $this->setFailureHandler($failureHandler);
+        $this->setResponseErrorDetector($responseErrorDetector);
 
         // Validate auth type
         $this->validateAuthType();
@@ -651,6 +661,57 @@ class Client
     }
 
     /**
+     * @return mixed
+     */
+    public function getErrorMessageParser(): mixed
+    {
+        return $this->errorMessageParser;
+    }
+
+    /**
+     * @param mixed $errorMessageParser
+     * @return void
+     */
+    public function setErrorMessageParser(mixed $errorMessageParser): void
+    {
+        $this->errorMessageParser = $errorMessageParser;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getResponseErrorDetector(): mixed
+    {
+        return $this->responseErrorDetector;
+    }
+
+    /**
+     * @param mixed $responseErrorDetector
+     * @return void
+     */
+    public function setResponseErrorDetector(mixed $responseErrorDetector): void
+    {
+        $this->responseErrorDetector = $responseErrorDetector;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFailureHandler(): mixed
+    {
+        return $this->failureHandler;
+    }
+
+    /**
+     * @param mixed $failureHandler
+     * @return void
+     */
+    public function setFailureHandler(mixed $failureHandler): void
+    {
+        $this->failureHandler = $failureHandler;
+    }
+
+    /**
      * @return array
      */
     public function getDebugData(): array
@@ -682,7 +743,7 @@ class Client
      */
     protected function validateAuthType(): void
     {
-        switch($this->getAuthType()) {
+        switch ($this->getAuthType()) {
             case AuthType::apiKey:
                 if (!$this->getApiKey()) {
                     throw new InvalidArgumentException("API Key is required for API Key authentication");
@@ -769,7 +830,7 @@ class Client
         string $endpoint = "",
         string $baseUrl = "",
     ): void {
-        switch($this->getAuthType()) {
+        switch ($this->getAuthType()) {
             case AuthType::apiKey:
                 if ($this->getAuthSettings()['location'] == 'query') {
                     $params['query'][$this->getAuthSettings()['name']] = $this->getApiKey();
@@ -858,7 +919,7 @@ class Client
      * @param bool $allowNewToken
      * @param string $pathToSave
      * @param bool|null $stream
-     * @param array|null $errorMessageNesting
+     * @param mixed $errorMessageNesting
      * @param int $sleep
      * @param array $customErrors
      * @param bool $ignoreAuth
@@ -883,11 +944,12 @@ class Client
         bool $allowNewToken = true,
         string $pathToSave = "",
         ?bool $stream = null,
-        ?array $errorMessageNesting = null, // Ex: ['error' => ['message']]
+        mixed $errorMessageNesting = null, // Ex: 'error.message' or ['error.message', 'msg'] or fn($data) => $data['err']
         int $sleep = 0,
         array $customErrors = [], // Ex: ['403' => 'body'] or ['500' => 'code'] or ['404' => 'message']
         bool $ignoreAuth = false,
-    ): ResponseInterface {
+        mixed $onFailure = null,
+    ): mixed {
         $params = [
             'query' => $query,
             'headers' => !empty($headers) ? $headers : $this->headers,
@@ -938,7 +1000,7 @@ class Client
             if ($this->getDebugMode()) {
                 $request = new Request(
                     method: $method,
-                    uri: ($baseUrl ?: $this->getBaseUrl()).$endpoint,
+                    uri: ($baseUrl ?: $this->getBaseUrl()) . $endpoint,
                     headers: $params['headers'],
                     body: $params['body'] ?? (isset($params['form_params']) ? http_build_query($params['form_params'], '', '&') : null),
                 );
@@ -957,17 +1019,40 @@ class Client
                 $this->addDebugData(debugData: $debugData);
                 throw new DebugException(json_encode($this->getDebugData(), JSON_PRETTY_PRINT));
             }
-            return $guzzle->request(
+            $response = $guzzle->request(
                 method: $method,
-                uri: ($baseUrl ?: $this->getBaseUrl()).$endpoint,
+                uri: ($baseUrl ?: $this->getBaseUrl()) . $endpoint,
                 options: $params,
             );
+
+            // Check for 'falsy 200' errors
+            if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
+                $detector = $this->getResponseErrorDetector();
+                if ($detector) {
+                    $body = $response->getBody();
+                    $body->rewind();
+                    $contents = json_decode($body->getContents(), true);
+                    $body->rewind();
+
+                    if ($contents && $this->isErrorBody($contents, $detector)) {
+                        return $this->handleException(
+                            exception: new ApiRequestException(
+                                $this->parseErrorData($contents, $errorMessageNesting ?? $this->getErrorMessageParser()),
+                                $response->getStatusCode()
+                            ),
+                            onFailure: $onFailure
+                        );
+                    }
+                }
+            }
+
+            return $response;
         } catch (RequestException $e) {
             // Exponential or custom back-off for rate limit
             if ($e->getCode() == 429) {
                 if ($e->hasResponse() && ($delayHeader = $this->getDelayHeader())) {
                     $dynamicSleep = (int) $e->getResponse()->getHeaderLine($delayHeader) *
-                        match($this->getDelayUnit()) {
+                        match ($this->getDelayUnit()) {
                             DelayUnit::second => 1000000,
                             DelayUnit::millisecond => 1000,
                             DelayUnit::microsecond => 1,
@@ -993,31 +1078,40 @@ class Client
             }
 
             if ($e->getCode() != 401) {
-                throw new ApiRequestException(
-                    self::getErrorMessage(exception: $e, errorMessageNesting: $errorMessageNesting),
-                    $e->getCode(),
-                    $e
+                return $this->handleException(
+                    exception: new ApiRequestException(
+                        $this->getErrorMessage(exception: $e, errorMessageNesting: $errorMessageNesting),
+                        $e->getCode(),
+                        $e
+                    ),
+                    onFailure: $onFailure
                 );
             }
 
             if (in_array($e->getCode(), array_keys($customErrors))) {
-                throw new ApiRequestException(
-                    match($customErrors[$e->getCode()]) {
-                        'body' => $e->getResponse()->getBody()->getContents(),
-                        'code' => (string) $e->getCode(),
-                        'message' => $e->getMessage(),
-                        default => (string) $customErrors[$e->getCode()],
-                    },
-                    $e->getCode(),
-                    $e
+                return $this->handleException(
+                    exception: new ApiRequestException(
+                        match ($customErrors[$e->getCode()]) {
+                            'body' => $e->getResponse()->getBody()->getContents(),
+                            'code' => (string) $e->getCode(),
+                            'message' => $e->getMessage(),
+                            default => (string) $customErrors[$e->getCode()],
+                        },
+                        $e->getCode(),
+                        $e
+                    ),
+                    onFailure: $onFailure
                 );
             }
 
             if (!$allowNewToken || $this->authType != AuthType::oAuthV2) {
-                throw new AuthenticationException(
-                    self::getErrorMessage(exception: $e, errorMessageNesting: $errorMessageNesting),
-                    $e->getCode(),
-                    $e
+                return $this->handleException(
+                    exception: new AuthenticationException(
+                        $this->getErrorMessage(exception: $e, errorMessageNesting: $errorMessageNesting),
+                        $e->getCode(),
+                        $e
+                    ),
+                    onFailure: $onFailure
                 );
             }
 
@@ -1038,16 +1132,42 @@ class Client
 
             // Retry request
             try {
-                return $guzzle->request(
+                $response = $guzzle->request(
                     method: $method,
-                    uri: ($baseUrl ?: $this->baseUrl).$endpoint,
+                    uri: ($baseUrl ?: $this->getBaseUrl()) . $endpoint,
                     options: $params,
                 );
+
+                // Check for 'falsy 200' errors on retry
+                if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
+                    $detector = $this->getResponseErrorDetector();
+                    if ($detector) {
+                        $body = $response->getBody();
+                        $body->rewind();
+                        $contents = json_decode($body->getContents(), true);
+                        $body->rewind();
+
+                        if ($contents && $this->isErrorBody($contents, $detector)) {
+                            return $this->handleException(
+                                exception: new ApiRequestException(
+                                    $this->parseErrorData($contents, $errorMessageNesting ?? $this->getErrorMessageParser()),
+                                    $response->getStatusCode()
+                                ),
+                                onFailure: $onFailure
+                            );
+                        }
+                    }
+                }
+
+                return $response;
             } catch (RequestException $e) {
-                throw new ApiRequestException(
-                    self::getErrorMessage(exception: $e, errorMessageNesting: $errorMessageNesting),
-                    $e->getCode(),
-                    $e
+                return $this->handleException(
+                    exception: new ApiRequestException(
+                        $this->getErrorMessage(exception: $e, errorMessageNesting: $errorMessageNesting),
+                        $e->getCode(),
+                        $e
+                    ),
+                    onFailure: $onFailure
                 );
             }
         }
@@ -1055,19 +1175,100 @@ class Client
 
     /**
      * @param RequestException $exception
-     * @param array|null $errorMessageNesting
+     * @param mixed $errorMessageNesting
      * @return string
      */
-    protected static function getErrorMessage(RequestException $exception, ?array $errorMessageNesting = null): string
+    protected function getErrorMessage(RequestException $exception, mixed $errorMessageNesting = null): string
     {
-        if (is_null($errorMessageNesting)) {
+        $parser = $errorMessageNesting ?? $this->getErrorMessageParser();
+
+        if (!$exception->hasResponse() || !$parser) {
             return $exception->getMessage();
         }
 
-        return self::getNestedErrorMessage(
-            contents: json_decode($exception->getResponse()->getBody()->getContents(), true),
-            nesting: $errorMessageNesting
-        );
+        $body = $exception->getResponse()->getBody();
+        $body->rewind();
+        $contents = json_decode($body->getContents(), true);
+
+        if (!$contents) {
+            return $exception->getMessage();
+        }
+
+        return self::parseErrorData($contents, $parser);
+    }
+
+    /**
+     * @param array $data
+     * @param mixed $parser
+     * @return string
+     */
+    protected static function parseErrorData(array $data, mixed $parser): string
+    {
+        // 1. Support for callables
+        if (is_callable($parser)) {
+            return $parser($data);
+        }
+
+        // 2. Original array structure support (for backward compatibility)
+        if (is_array($parser) && !empty($parser) && is_array(reset($parser))) {
+            return self::getNestedErrorMessage($data, $parser);
+        }
+
+        // 3. Candidate paths (strings or dot notation)
+        $candidates = (array) $parser;
+        foreach ($candidates as $path) {
+            if (!is_string($path))
+                continue;
+            $val = self::getValueByPath($data, $path);
+            if ($val && (is_string($val) || is_numeric($val))) {
+                return (string) $val;
+            }
+        }
+
+        // Fallback: Return original JSON if no match found
+        return json_encode($data);
+    }
+
+    /**
+     * @param array $data
+     * @param string $path
+     * @return mixed
+     */
+    protected static function getValueByPath(array $data, string $path): mixed
+    {
+        if (!str_contains($path, '.')) {
+            return $data[$path] ?? null;
+        }
+
+        foreach (explode('.', $path) as $key) {
+            if (!is_array($data) || !isset($data[$key])) {
+                return null;
+            }
+            $data = $data[$key];
+        }
+
+        return $data;
+    }
+
+    /**
+     * @param Exception $exception
+     * @param mixed $onFailure
+     * @return mixed
+     * @throws Exception
+     */
+    protected function handleException(Exception $exception, mixed $onFailure = null): mixed
+    {
+        $handler = $onFailure ?? $this->getFailureHandler();
+
+        if (is_callable($handler)) {
+            return $handler($exception);
+        }
+
+        if (!is_null($handler)) {
+            return $handler;
+        }
+
+        throw $exception;
     }
 
     /**
@@ -1087,5 +1288,29 @@ class Client
             return $contents[$nesting[$key]];
         }
         return json_encode($contents);
+    }
+    /**
+     * @param array $data
+     * @param mixed $detector
+     * @return bool
+     */
+    protected function isErrorBody(array $data, mixed $detector): bool
+    {
+        // 1. Support for callables
+        if (is_callable($detector)) {
+            return $detector($data);
+        }
+
+        // 2. Dot notation check
+        $val = self::getValueByPath($data, (string) $detector);
+        
+        // If the key exists:
+        // - if it's "success" and it's false, it's an error.
+        // - if it's "error" and it's truthy, it's an error.
+        if (str_contains(strtolower((string) $detector), 'success')) {
+            return ($val === false || $val === 'false' || $val === 0 || $val === '0');
+        }
+
+        return !empty($val);
     }
 }
