@@ -891,6 +891,10 @@ class Client
             "grant_type" => "refresh_token"
         ];
 
+        if ($this->getScopes()) {
+            $body["scope"] = implode(" ", $this->getScopes());
+        }
+
         $response = $this->performRequest(
             method: "POST",
             endpoint: "",
