@@ -1,13 +1,18 @@
 {
     "name": "anibalealvarezs/api-client-skeleton",
-    "description": "description",
+    "description": "Base skeleton for standardizing PHP API clients with advanced error handling and data normalization.",
     "license": "MIT",
+    "keywords": ["api", "client", "skeleton", "sdk", "normalization", "error-handling"],
+    "homepage": "https://github.com/anibalealvarezs/api-client-skeleton",
     "authors": [
         {
             "name": "Aníbal Álvarez",
             "email": "anibalealvarezs@gmail.com"
         }
     ],
+    "support": {
+        "issues": "https://github.com/anibalealvarezs/api-client-skeleton/issues"
+    },
     "require": {
         "php": ">=8.1",
         "guzzlehttp/guzzle": "^7.0",
