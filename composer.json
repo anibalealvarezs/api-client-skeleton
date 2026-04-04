@@ -17,8 +17,8 @@
         "php": ">=8.1",
         "guzzlehttp/guzzle": "^7.0",
         "ext-json": "*",
-        "symfony/yaml": "^5.4.10",
-        "nesbot/carbon": "^2.61",
+        "symfony/yaml": "^5.4.10 || ^6.0 || ^7.0",
+        "nesbot/carbon": "^2.61 || ^3.0",
         "anibalealvarezs/oauth-v1": "@dev"
     },
     "repositories": [
