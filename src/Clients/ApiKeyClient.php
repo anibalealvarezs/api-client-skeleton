@@ -27,6 +27,7 @@ class ApiKeyClient extends Client
         ?string $delayHeader = null,
         DelayUnit $delayUnit = DelayUnit::second,
         ?GuzzleClient $guzzleClient = null,
+        bool $debugMode = false,
     ) {
         parent::__construct(
             baseUrl: $baseUrl,
@@ -36,6 +37,7 @@ class ApiKeyClient extends Client
             authSettings: $authSettings,
             delayHeader: $delayHeader,
             delayUnit: $delayUnit,
+            debugMode: $debugMode,
         );
     }
 }
