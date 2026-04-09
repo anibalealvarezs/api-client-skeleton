@@ -48,4 +48,20 @@ interface SyncDriverInterface
      * @return array
      */
     public function getUpdatableCredentials(): array;
+    /**
+     * Get the configuration schema for the driver.
+     *
+     * @return array
+     */
+    public function getConfigSchema(): array;
+    /**
+     * Validate and prepare the configuration for the driver.
+     * Use this to apply defaults and normalize structures.
+     *
+     * @param array $config
+     * @return array
+     */
+    public function validateConfig(array $config): array;
 }
+
+
