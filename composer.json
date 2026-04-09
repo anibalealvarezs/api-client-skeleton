@@ -20,6 +20,8 @@
         "symfony/yaml": "^5.4.10 || ^6.0 || ^7.0",
         "nesbot/carbon": "^2.61 || ^3.0",
         "symfony/http-foundation": "^5.4 || ^6.0 || ^7.0",
+        "doctrine/collections": "^1.6 || ^2.0",
+        "psr/log": "^1.1 || ^2.0 || ^3.0",
         "anibalealvarezs/oauth-v1": "@dev"
     },
     "repositories": [
