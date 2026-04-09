@@ -33,4 +33,11 @@ interface SyncDriverInterface
      * @return mixed
      */
     public function getApi(array $config = []): mixed;
+
+    /**
+     * Get the list of environment variables that are updatable for this driver.
+     *
+     * @return array
+     */
+    public function getUpdatableCredentials(): array;
 }
