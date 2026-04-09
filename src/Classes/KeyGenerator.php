@@ -74,7 +74,13 @@ class KeyGenerator
         if ($dimensionSet === $emptyHash) { $dimensionSet = null; }
 
         $channelVal = $channel instanceof \BackedEnum ? $channel->value : $channel;
-        $channelEnum = Channel::from($channelVal);
+        $channelEnum = is_numeric($channelVal) 
+            ? Channel::from((int) $channelVal) 
+            : Channel::tryFromName((string) $channelVal);
+
+        if (!$channelEnum) {
+            throw new InvalidArgumentException("Invalid channel: " . (is_array($channelVal) ? json_encode($channelVal) : $channelVal));
+        }
 
         $params = [
             'channel' => $channelEnum->getName(),
