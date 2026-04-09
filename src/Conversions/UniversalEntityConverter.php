@@ -28,7 +28,9 @@ class UniversalEntityConverter
     public static function convert(array $rows, array $config, ?LoggerInterface $logger = null): ArrayCollection
     {
         $collection = new ArrayCollection();
-        $channel = $config['channel'] ?? 'unknown';
+        $channelVal = $config['channel'] ?? 'unknown';
+        $channelEnum = \Anibalealvarezs\ApiSkeleton\Enums\Channel::tryFromName((string) $channelVal);
+        $channel = $channelEnum ? $channelEnum->value : $channelVal;
         $mapping = $config['mapping'] ?? [];
         $platformIdField = $config['platform_id_field'] ?? 'id';
         $dateField = $config['date_field'] ?? 'created_at';
@@ -36,7 +38,9 @@ class UniversalEntityConverter
         foreach ($rows as $row) {
             // error_log("CELL_DATA: " . json_encode($row));
             $entity = new stdClass();
-            $entity->channel = $channel;
+            $channelVal = $config['channel'] ?? 'unknown';
+            $channelEnum = \Anibalealvarezs\ApiSkeleton\Enums\Channel::tryFromName((string) $channelVal);
+            $entity->channel = $channelEnum ? $channelEnum->value : $channelVal;
             
             // 1. Mandatory Fields
             $entity->platformId = (string) (self::getNestedValue($row, $platformIdField) ?? '');

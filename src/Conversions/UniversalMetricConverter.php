@@ -38,6 +38,8 @@ class UniversalMetricConverter
         if (!$channel) {
             throw new \InvalidArgumentException("Channel is required for UniversalMetricConverter");
         }
+        $channelEnum = \Anibalealvarezs\ApiSkeleton\Enums\Channel::tryFromName((string) $channel);
+        $channel = $channelEnum ? $channelEnum->value : $channel;
 
         $period = $config['period'] ?? Period::Daily->value;
         $platformIdField = $config['platform_id_field'] ?? 'id';
