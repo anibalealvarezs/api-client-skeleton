@@ -35,7 +35,15 @@ interface SyncDriverInterface
     public function getApi(array $config = []): mixed;
 
     /**
+     * Get the current AuthProvider instance.
+     *
+     * @return AuthProviderInterface|null
+     */
+    public function getAuthProvider(): ?AuthProviderInterface;
+
+    /**
      * Get the list of environment variables that are updatable for this driver.
+
      *
      * @return array
      */
