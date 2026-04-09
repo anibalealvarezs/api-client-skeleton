@@ -25,4 +25,12 @@ interface SyncDriverInterface
      * Get the channel identifier (e.g. google_search_console).
      */
     public function getChannel(): string;
+
+    /**
+     * Get the raw API client instance for the driver.
+     *
+     * @param array $config
+     * @return mixed
+     */
+    public function getApi(array $config = []): mixed;
 }
