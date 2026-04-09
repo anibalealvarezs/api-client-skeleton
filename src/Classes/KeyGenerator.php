@@ -79,7 +79,7 @@ class KeyGenerator
             : Channel::tryFromName((string) $channelVal);
 
         if (!$channelEnum) {
-            throw new InvalidArgumentException("Invalid channel: " . (is_array($channelVal) ? json_encode($channelVal) : $channelVal));
+            throw new \InvalidArgumentException("Invalid channel identifier: " . (is_array($channelVal) ? json_encode($channelVal) : (string)$channelVal));
         }
 
         $params = [
@@ -196,7 +196,7 @@ class KeyGenerator
         DateTime|string $platformCreatedAt
     ): string {
         return md5(json_encode([
-            'channel' => $channel instanceof Channel ? $channel->getName() : (is_numeric($channel) ? Channel::from($channel)->getName() : $channel),
+            'channel' => $channel instanceof Channel ? $channel->getName() : (is_numeric($channel) ? Channel::from((int)$channel)->getName() : $channel),
             'platformId' => $platformId,
             'metric_id' => is_object($metric) ? $metric->getId() : $metric,
             'platformCreatedAt' => $platformCreatedAt instanceof DateTime ? $platformCreatedAt->format('Y-m-d') : $platformCreatedAt
