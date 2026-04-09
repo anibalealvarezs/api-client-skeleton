@@ -59,5 +59,11 @@ abstract class BaseAuthProvider implements AuthProviderInterface
         return [];
     }
 
+    public function updateCredentials(array $credentials): void
+    {
+        $this->data = array_replace_recursive($this->data, $credentials);
+        $this->save();
+    }
+
     abstract public function getAccessToken(): string;
 }

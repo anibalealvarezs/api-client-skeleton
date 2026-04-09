@@ -27,4 +27,11 @@ interface AuthProviderInterface
      * Get the list of scopes authorized for this provider.
      */
     public function getScopes(): array;
+
+    /**
+     * Update the stored credentials for this provider.
+     *
+     * @param array $credentials
+     */
+    public function updateCredentials(array $credentials): void;
 }
