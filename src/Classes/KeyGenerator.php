@@ -50,9 +50,9 @@ class KeyGenerator
      * @return string
      */
     public static function generateMetricConfigKey(
-        Channel|int|string $channel,
+        mixed $channel,
         string $name,
-        Period|string $period,
+        mixed $period,
         object|string|null $account = null,
         object|string|null $channeledAccount = null,
         object|string|null $campaign = null,
@@ -66,19 +66,20 @@ class KeyGenerator
         object|string|null $product = null,
         object|string|null $customer = null,
         object|string|null $order = null,
-        object|CountryEnum|string|null $country = null,
-        object|DeviceEnum|string|null $device = null,
+        mixed $country = null,
+        mixed $device = null,
         object|int|string|null $dimensionSet = null
     ): string {
         $emptyHash = self::generateDimensionsHash([]);
         if ($dimensionSet === $emptyHash) { $dimensionSet = null; }
 
-        $channelEnum = $channel instanceof Channel ? $channel : Channel::from($channel);
+        $channelVal = $channel instanceof \BackedEnum ? $channel->value : $channel;
+        $channelEnum = Channel::from($channelVal);
 
         $params = [
             'channel' => $channelEnum->getName(),
             'name' => $name,
-            'period' => $period instanceof Period ? $period->value : $period,
+            'period' => $period instanceof \BackedEnum ? $period->value : $period,
             'account' => self::extractString($account, 'getName'),
             'channeledAccount' => (string) self::extractString($channeledAccount, 'getPlatformId'),
             'campaign' => (string) self::extractString($campaign, 'getCampaignId'),
@@ -92,8 +93,8 @@ class KeyGenerator
             'product' => (string) self::extractString($product, 'getProductId'),
             'customer' => self::extractString($customer, 'getEmail'),
             'order' => (string) self::extractString($order, 'getOrderId'),
-            'country' => ($country instanceof CountryEnum) ? $country->value : self::extractString($country, 'getCode'),
-            'device' => ($device instanceof DeviceEnum) ? $device->value : self::extractString($device, 'getType'),
+            'country' => ($country instanceof \BackedEnum) ? $country->value : self::extractString($country, 'getCode'),
+            'device' => ($device instanceof \BackedEnum) ? $device->value : self::extractString($device, 'getType'),
             'dimensionSet' => self::extractString($dimensionSet, 'getHash')
         ];
 
@@ -110,9 +111,9 @@ class KeyGenerator
     }
 
     public static function generateMetricKey(
-        Channel|int|string|null $channel = null,
+        mixed $channel = null,
         ?string $name = null,
-        Period|string|null $period = null,
+        mixed $period = null,
         DateTime|string|null $metricDate = null,
         object|int|null $account = null,
         object|int|null $channeledAccount = null,
@@ -127,8 +128,8 @@ class KeyGenerator
         object|int|null $product = null,
         object|int|null $customer = null,
         object|int|null $order = null,
-        object|CountryEnum|string|null $country = null,
-        object|DeviceEnum|string|null $device = null,
+        mixed $country = null,
+        mixed $device = null,
         array $dimensions = [],
         ?string $dimensionsHash = null,
         ?string $metricConfigKey = null,
