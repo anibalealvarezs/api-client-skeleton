@@ -22,6 +22,13 @@ interface SeederInterface
     public function getEntityManager(): EntityManagerInterface;
 
     /**
+     * Get the dimension manager.
+     *
+     * @return DimensionManagerInterface
+     */
+    public function getDimensionManager(): DimensionManagerInterface;
+
+    /**
      * Get the absolute class name for an entity.
      *
      * @param string $shortName
@@ -56,10 +63,43 @@ interface SeederInterface
      * @return void
      */
     public function queueMetric(
-        $channel,
-        $name,
-        $date,
-        $value,
-        ...$params
+        mixed $channel,
+        string $name,
+        string $date,
+        mixed $value,
+        $setId = null,
+        $pageId = null,
+        $adId = null,
+        $agId = null,
+        $cpId = null,
+        $caId = null,
+        $gAccId = null,
+        $gCpId = null,
+        $postId = null,
+        $queryId = null,
+        $countryId = null,
+        $deviceId = null,
+        $productId = null,
+        $customerId = null,
+        $orderId = null,
+        $creativeId = null,
+        ?string $accName = null,
+        ?string $caPId = null,
+        ?string $gCpPId = null,
+        ?string $cpPId = null,
+        ?string $agPId = null,
+        ?string $adPId = null,
+        ?string $pageUrl = null,
+        ?string $postPId = null,
+        ?string $queryPId = null,
+        ?string $countryPId = null,
+        ?string $devicePId = null,
+        ?string $productPId = null,
+        ?string $customerPId = null,
+        ?string $orderPId = null,
+        ?string $creativePId = null,
+        ?string $data = null,
+        ?string $setHash = null,
+        ...$extraParams
     ): void;
 }
