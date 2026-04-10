@@ -76,6 +76,14 @@ interface SyncDriverInterface
      * Initialize driver-specific configurations in the host (e.g. Repository relations).
      */
     public function boot(): void;
+
+    /**
+     * Get the asset identification patterns for this driver.
+     * Used to generate canonical IDs from URLs or hostnames.
+     *
+     * @return array
+     */
+    public function getAssetPatterns(): array;
 }
 
 
