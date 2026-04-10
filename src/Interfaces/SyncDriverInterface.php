@@ -71,6 +71,11 @@ interface SyncDriverInterface
      * @return void
      */
     public function seedDemoData(SeederInterface $seeder, array $config = []): void;
+
+    /**
+     * Initialize driver-specific configurations in the host (e.g. Repository relations).
+     */
+    public function boot(): void;
 }
 
 
