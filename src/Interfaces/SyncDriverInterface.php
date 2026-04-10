@@ -62,6 +62,15 @@ interface SyncDriverInterface
      * @return array
      */
     public function validateConfig(array $config): array;
+
+    /**
+     * Seed realistic demo data for this driver.
+     *
+     * @param SeederInterface $seeder The seeder utility (command or service)
+     * @param array $config
+     * @return void
+     */
+    public function seedDemoData(SeederInterface $seeder, array $config = []): void;
 }
 
 
