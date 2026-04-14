@@ -39,6 +39,7 @@ class OAuthV1Client extends Client
         ?string $delayHeader = null,
         DelayUnit $delayUnit = DelayUnit::second,
         ?GuzzleClient $guzzleClient = null,
+        ?\Psr\Log\LoggerInterface $logger = null,
     ) {
         parent::__construct(
             baseUrl: $baseUrl,
@@ -58,6 +59,7 @@ class OAuthV1Client extends Client
             signatureMethod: $signatureMethod,
             delayHeader: $delayHeader,
             delayUnit: $delayUnit,
+            logger: $logger,
         );
     }
 }

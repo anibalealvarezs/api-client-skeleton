@@ -23,6 +23,7 @@ class Client
 {
     protected string $baseUrl;
     protected ?GuzzleClient $guzzleClient = null;
+    protected ?\Psr\Log\LoggerInterface $logger = null;
     protected string $authUrl = "";
     protected string $tokenUrl = "";
     protected string $redirectUrl = "https://oauth.pstmn.io/v1/browser-callback";
@@ -114,7 +115,9 @@ class Client
         mixed $errorMessageParser = null,
         mixed $failureHandler = null,
         mixed $responseErrorDetector = null,
+        ?\Psr\Log\LoggerInterface $logger = null,
     ) {
+        $this->setLogger($logger);
         // Set properties
         $this->setBaseUrl($baseUrl);
         $this->setGuzzleClient($guzzleClient ?: new GuzzleClient());
@@ -165,6 +168,23 @@ class Client
     public function setGuzzleClient(GuzzleClient $param): void
     {
         $this->guzzleClient = $param;
+    }
+
+    /**
+     * @return \Psr\Log\LoggerInterface|null
+     */
+    public function getLogger(): ?\Psr\Log\LoggerInterface
+    {
+        return $this->logger;
+    }
+
+    /**
+     * @param \Psr\Log\LoggerInterface|null $logger
+     * @return void
+     */
+    public function setLogger(?\Psr\Log\LoggerInterface $logger): void
+    {
+        $this->logger = $logger;
     }
 
     /**

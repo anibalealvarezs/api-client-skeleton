@@ -30,6 +30,7 @@ class NoAuthClient extends Client
         ?string $delayHeader = null,
         DelayUnit $delayUnit = DelayUnit::second,
         ?GuzzleClient $guzzleClient = null,
+        ?\Psr\Log\LoggerInterface $logger = null,
     ) {
         parent::__construct(
             baseUrl: $baseUrl,
@@ -41,6 +42,7 @@ class NoAuthClient extends Client
             authType: AuthType::none,
             delayHeader: $delayHeader,
             delayUnit: $delayUnit,
+            logger: $logger,
         );
     }
 }

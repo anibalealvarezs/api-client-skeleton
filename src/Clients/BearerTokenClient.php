@@ -28,6 +28,7 @@ class BearerTokenClient extends Client
         ?string $delayHeader = null,
         DelayUnit $delayUnit = DelayUnit::second,
         ?GuzzleClient $guzzleClient = null,
+        ?\Psr\Log\LoggerInterface $logger = null,
     ) {
         parent::__construct(
             baseUrl: $baseUrl,
@@ -38,6 +39,7 @@ class BearerTokenClient extends Client
             authSettings: $authSettings,
             delayHeader: $delayHeader,
             delayUnit: $delayUnit,
+            logger: $logger,
         );
     }
 }

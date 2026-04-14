@@ -28,6 +28,7 @@ class ApiKeyClient extends Client
         DelayUnit $delayUnit = DelayUnit::second,
         ?GuzzleClient $guzzleClient = null,
         bool $debugMode = false,
+        ?\Psr\Log\LoggerInterface $logger = null,
     ) {
         parent::__construct(
             baseUrl: $baseUrl,
@@ -38,6 +39,7 @@ class ApiKeyClient extends Client
             delayHeader: $delayHeader,
             delayUnit: $delayUnit,
             debugMode: $debugMode,
+            logger: $logger,
         );
     }
 }
