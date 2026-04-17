@@ -52,6 +52,7 @@ class Client
     protected array $debugData = [];
     protected mixed $errorMessageParser = null;
     protected mixed $responseErrorDetector = null;
+    protected mixed $rateLimitDetector = null;
     protected mixed $failureHandler = null;
 
     /**
@@ -115,6 +116,7 @@ class Client
         mixed $errorMessageParser = null,
         mixed $failureHandler = null,
         mixed $responseErrorDetector = null,
+        mixed $rateLimitDetector = null,
         ?\Psr\Log\LoggerInterface $logger = null,
     ) {
         $this->setLogger($logger);
@@ -148,6 +150,7 @@ class Client
         $this->setErrorMessageParser($errorMessageParser);
         $this->setFailureHandler($failureHandler);
         $this->setResponseErrorDetector($responseErrorDetector);
+        $this->setRateLimitDetector($rateLimitDetector);
 
         // Validate auth type
         $this->validateAuthType();
@@ -732,6 +735,23 @@ class Client
     }
 
     /**
+     * @return mixed
+     */
+    public function getRateLimitDetector(): mixed
+    {
+        return $this->rateLimitDetector;
+    }
+
+    /**
+     * @param mixed $rateLimitDetector
+     * @return void
+     */
+    public function setRateLimitDetector(mixed $rateLimitDetector): void
+    {
+        $this->rateLimitDetector = $rateLimitDetector;
+    }
+
+    /**
      * @return array
      */
     public function getDebugData(): array
@@ -1061,9 +1081,28 @@ class Client
                     $body->rewind();
 
                     if ($contents && $this->isErrorBody($contents, $detector)) {
+                        $errorMessage = $this->parseErrorData($contents, $errorMessageNesting ?? $this->getErrorMessageParser());
+                        if ($this->isRateLimit($errorMessage)) {
+                            return $this->performRequest(
+                                method: $method,
+                                endpoint: $endpoint,
+                                query: $query,
+                                body: $body,
+                                form_params: $form_params,
+                                baseUrl: $baseUrl,
+                                headers: $headers,
+                                cookies: $cookies,
+                                verify: $verify,
+                                allowNewToken: $allowNewToken,
+                                pathToSave: $pathToSave,
+                                stream: $stream,
+                                errorMessageNesting: $errorMessageNesting,
+                                sleep: $sleep > 0 ? $sleep * 2 : 1000000,
+                            );
+                        }
                         return $this->handleException(
                             exception: new ApiRequestException(
-                                $this->parseErrorData($contents, $errorMessageNesting ?? $this->getErrorMessageParser()),
+                                $errorMessage,
                                 $response->getStatusCode()
                             ),
                             onFailure: $onFailure
@@ -1075,7 +1114,7 @@ class Client
             return $response;
         } catch (RequestException $e) {
             // Exponential or custom back-off for rate limit
-            if ($e->getCode() == 429) {
+            if ($e->getCode() == 429 || $this->isRateLimit($e)) {
                 if ($e->hasResponse() && ($delayHeader = $this->getDelayHeader())) {
                     $dynamicSleep = (int) $e->getResponse()->getHeaderLine($delayHeader) *
                         match ($this->getDelayUnit()) {
@@ -1339,5 +1378,47 @@ class Client
         }
 
         return !empty($val);
+    }
+
+    /**
+     * @param mixed $input
+     * @return bool
+     */
+    protected function isRateLimit(mixed $input): bool
+    {
+        $detector = $this->getRateLimitDetector();
+        if (!$detector) {
+            return false;
+        }
+
+        $message = $input;
+        if ($input instanceof Exception) {
+            $message = $input->getMessage();
+        }
+
+        if (!is_string($message)) {
+            return false;
+        }
+
+        // 1. Support for callables
+        if (is_callable($detector)) {
+            return $detector($input);
+        }
+
+        // 2. String search in message
+        if (is_string($detector)) {
+            return str_contains($message, $detector);
+        }
+
+        // 3. Array of strings search
+        if (is_array($detector)) {
+            foreach ($detector as $item) {
+                if (is_string($item) && str_contains($message, $item)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }
