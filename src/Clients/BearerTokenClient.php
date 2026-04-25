@@ -7,6 +7,7 @@ use Anibalealvarezs\ApiSkeleton\Enums\AuthType;
 use Anibalealvarezs\ApiSkeleton\Enums\DelayUnit;
 use Exception;
 use GuzzleHttp\Client as GuzzleClient;
+use Psr\Log\LoggerInterface;
 
 class BearerTokenClient extends Client
 {
@@ -18,6 +19,7 @@ class BearerTokenClient extends Client
      * @param string|null $delayHeader
      * @param DelayUnit $delayUnit
      * @param GuzzleClient|null $guzzleClient
+     * @param LoggerInterface|null $logger
      * @throws Exception
      */
     public function __construct(
@@ -28,7 +30,7 @@ class BearerTokenClient extends Client
         ?string $delayHeader = null,
         DelayUnit $delayUnit = DelayUnit::second,
         ?GuzzleClient $guzzleClient = null,
-        ?\Psr\Log\LoggerInterface $logger = null,
+        ?LoggerInterface $logger = null,
     ) {
         parent::__construct(
             baseUrl: $baseUrl,

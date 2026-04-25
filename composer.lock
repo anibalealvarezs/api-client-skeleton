@@ -12,13 +12,13 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:anibalealvarezs/oauth-v1.git",
-                "reference": "81fd1eb3369aeb088e820ea4e2478aeaae64be4a"
+                "reference": "5ddf53cc7dc2265d3e3979838d974c931b2a30bf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://satis.anibalalvarez.com/dist/anibalealvarezs/oauth-v1/anibalealvarezs-oauth-v1-81fd1eb3369aeb088e820ea4e2478aeaae64be4a-zip-16f0be.zip",
-                "reference": "81fd1eb3369aeb088e820ea4e2478aeaae64be4a",
-                "shasum": "1c38fba87c7b7eb89824cdd12e8d66ed26dbf8f5"
+                "url": "https://satis.anibalalvarez.com/dist/anibalealvarezs/oauth-v1/anibalealvarezs-oauth-v1-5ddf53cc7dc2265d3e3979838d974c931b2a30bf-zip-435722.zip",
+                "reference": "5ddf53cc7dc2265d3e3979838d974c931b2a30bf",
+                "shasum": "d3647ffc1ed75978a6731d421c5c6248867c3309"
             },
             "require": {
                 "php": ">=8.1"
@@ -62,7 +62,7 @@
             "support": {
                 "issues": "https://github.com/anibalealvarezs/OAuth-v1/issues"
             },
-            "time": "2026-04-17T21:42:38+00:00"
+            "time": "2026-04-17T22:37:20+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -824,12 +824,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "3750da161cfc25687c25bc2a87b0ca5e92e0697c"
+                "reference": "563e765f912f7bbf939c1ceb472b2564ede7873d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/3750da161cfc25687c25bc2a87b0ca5e92e0697c",
-                "reference": "3750da161cfc25687c25bc2a87b0ca5e92e0697c",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/563e765f912f7bbf939c1ceb472b2564ede7873d",
+                "reference": "563e765f912f7bbf939c1ceb472b2564ede7873d",
                 "shasum": ""
             },
             "require": {
@@ -892,7 +892,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-04-13T14:28:23+00:00"
+            "time": "2026-04-18T13:18:21+00:00"
         }
     ],
     "packages-dev": [
@@ -1645,12 +1645,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "6fd565bf20d294f964f4cb5162c1615cfe273347"
+                "reference": "ab76d93efcc2d008cc2a4875c05777cecd58d81b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/6fd565bf20d294f964f4cb5162c1615cfe273347",
-                "reference": "6fd565bf20d294f964f4cb5162c1615cfe273347",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/ab76d93efcc2d008cc2a4875c05777cecd58d81b",
+                "reference": "ab76d93efcc2d008cc2a4875c05777cecd58d81b",
                 "shasum": ""
             },
             "require": {
@@ -1732,7 +1732,7 @@
                     "type": "other"
                 }
             ],
-            "time": "2026-04-14T06:54:51+00:00"
+            "time": "2026-04-21T10:02:46+00:00"
         },
         {
             "name": "psr/container",
