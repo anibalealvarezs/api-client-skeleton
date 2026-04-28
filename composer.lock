@@ -4,21 +4,15 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "29d6e5ff98077e9aa0bb45c64fd53864",
+    "content-hash": "6f02dfdea0e52b78d0b033c4bba44bc3",
     "packages": [
         {
             "name": "anibalealvarezs/oauth-v1",
             "version": "dev-main",
-            "source": {
-                "type": "git",
-                "url": "git@github.com:anibalealvarezs/oauth-v1.git",
-                "reference": "5ddf53cc7dc2265d3e3979838d974c931b2a30bf"
-            },
             "dist": {
-                "type": "zip",
-                "url": "https://satis.anibalalvarez.com/dist/anibalealvarezs/oauth-v1/anibalealvarezs-oauth-v1-5ddf53cc7dc2265d3e3979838d974c931b2a30bf-zip-435722.zip",
-                "reference": "5ddf53cc7dc2265d3e3979838d974c931b2a30bf",
-                "shasum": "d3647ffc1ed75978a6731d421c5c6248867c3309"
+                "type": "path",
+                "url": "../OAuth-v1",
+                "reference": "5ddf53cc7dc2265d3e3979838d974c931b2a30bf"
             },
             "require": {
                 "php": ">=8.1"
@@ -28,7 +22,6 @@
                 "phpstan/phpstan": "^1.10",
                 "phpunit/phpunit": "^9"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -62,7 +55,10 @@
             "support": {
                 "issues": "https://github.com/anibalealvarezs/OAuth-v1/issues"
             },
-            "time": "2026-04-17T22:37:20+00:00"
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
         },
         {
             "name": "guzzlehttp/guzzle",
