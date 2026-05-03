@@ -1,60 +1,60 @@
 {
-  "name": "anibalealvarezs/api-client-skeleton",
-  "description": "Base skeleton for standardizing PHP API clients with advanced error handling and data normalization.",
-  "license": "MIT",
-  "keywords": [
-    "api",
-    "client",
-    "skeleton",
-    "sdk",
-    "normalization",
-    "error-handling"
-  ],
-  "homepage": "https://github.com/anibalealvarezs/api-client-skeleton",
-  "authors": [
-    {
-      "name": "Aníbal Álvarez",
-      "email": "anibalealvarezs@gmail.com"
-    }
-  ],
-  "support": {
-    "issues": "https://github.com/anibalealvarezs/api-client-skeleton/issues"
-  },
-  "require": {
-    "guzzlehttp/guzzle": "^7.0",
-    "ext-json": "*",
-    "anibalealvarezs/oauth-v1": "@dev",
-    "symfony/yaml": "^6.0 || ^7.0",
-    "predis/predis": "^2.0 || ^3.0",
-    "php": ">=8.3"
-  },
-  "repositories": [
-    {
-      "type": "composer",
-      "url": "https://satis.anibalalvarez.com/"
-    }
-  ],
-  "autoload": {
-    "psr-4": {
-      "Anibalealvarezs\\ApiSkeleton\\": "src"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "Tests\\": "tests/"
-    }
-  },
-  "require-dev": {
-    "fakerphp/faker": "^1.20",
-    "doctrine/instantiator": "^1.5",
-    "phpstan/phpstan": "^1.10",
-    "phpunit/phpunit": "^9"
-  },
-  "minimum-stability": "dev",
-  "config": {
-    "platform": {
-      "php": "8.3.0"
-    }
-  },
-  "prefer-stable": true
+    "name":  "anibalealvarezs/api-client-skeleton",
+    "description":  "Base skeleton for standardizing PHP API clients with advanced error handling and data normalization.",
+    "license":  "MIT",
+    "keywords":  [
+                     "api",
+                     "client",
+                     "skeleton",
+                     "sdk",
+                     "normalization",
+                     "error-handling"
+                 ],
+    "homepage":  "https://github.com/anibalealvarezs/api-client-skeleton",
+    "authors":  [
+                    {
+                        "name":  "Aníbal Álvarez",
+                        "email":  "anibalealvarezs@gmail.com"
+                    }
+                ],
+    "support":  {
+                    "issues":  "https://github.com/anibalealvarezs/api-client-skeleton/issues"
+                },
+    "require":  {
+                    "guzzlehttp/guzzle":  "^7.0",
+                    "ext-json":  "*",
+                    "anibalealvarezs/oauth-v1":  "@dev",
+                    "symfony/yaml":  "^6.0 || ^7.0",
+                    "predis/predis":  "^2.0 || ^3.0",
+                    "php":  ">=8.3"
+                },
+    "repositories":  [
+                         {
+                             "type":  "composer",
+                             "url":  "https://satis.anibalalvarez.com/"
+                         }
+                     ],
+    "autoload":  {
+                     "psr-4":  {
+                                   "Anibalealvarezs\\ApiSkeleton\\":  "src"
+                               }
+                 },
+    "autoload-dev":  {
+                         "psr-4":  {
+                                       "Tests\\":  "tests/"
+                                   }
+                     },
+    "require-dev":  {
+                        "fakerphp/faker":  "^1.20",
+                        "doctrine/instantiator":  "^1.5",
+                        "phpstan/phpstan":  "^1.10",
+                        "phpunit/phpunit":  "^9"
+                    },
+    "minimum-stability":  "dev",
+    "config":  {
+                   "platform":  {
+                                    "php":  "8.3.0"
+                                }
+               },
+    "prefer-stable":  true
 }
