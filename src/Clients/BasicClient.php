@@ -39,6 +39,8 @@ class BasicClient extends Client
             baseUrl: $baseUrl,
             guzzleClient: $guzzleClient,
             defaultHeaders: $defaultHeaders,
+            userId: $username,
+            password: $password,
             token: $this->encodeCredentials($username, $password, $encodingMethod),
             authType: AuthType::basic,
             authSettings: $authSettings,
