@@ -1114,7 +1114,8 @@ class Client
             return $response;
         } catch (RequestException $e) {
             // Exponential or custom back-off for rate limit
-            if ($e->getCode() == 429 || $this->isRateLimit($e)) {
+            $parsedErrorMessage = $this->getErrorMessage(exception: $e, errorMessageNesting: $errorMessageNesting);
+            if ($e->getCode() == 429 || $this->isRateLimit($e) || $this->isRateLimit($parsedErrorMessage)) {
                 if ($e->hasResponse() && ($delayHeader = $this->getDelayHeader())) {
                     $dynamicSleep = (int) $e->getResponse()->getHeaderLine($delayHeader) *
                         match ($this->getDelayUnit()) {

@@ -75,6 +75,27 @@ class ErrorHandlingTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
+    public function testRequestExceptionRetriesWhenParsedBodyMatchesRetryableDetector(): void
+    {
+        $client = $this->createMockedClient([
+            new Response(400, [], json_encode([
+                'error' => [
+                    'message' => 'An unexpected error has occurred. Please retry your request later.',
+                    'type' => 'OAuthException',
+                    'code' => 2,
+                ],
+            ])),
+            new Response(200, [], json_encode(['success' => true])),
+        ]);
+
+        $client->setResponseErrorDetector('error');
+        $client->setErrorMessageParser('error.message');
+        $client->setRateLimitDetector('Please retry your request later');
+
+        $response = $client->performRequest('GET', '/test', sleep: 1);
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
     public function testOAuth2TokenRefreshLoopPrevention(): void
     {
         // Mock persistent 401s
