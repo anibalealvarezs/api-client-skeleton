@@ -96,6 +96,31 @@ class ErrorHandlingTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
+    public function testFalsy200RetriesWhenDetectorMatchesParsedBodySemantically(): void
+    {
+        $client = $this->createMockedClient([
+            new Response(200, [], json_encode([
+                'error' => [
+                    'message' => 'Please retry your request later.',
+                    'type' => 'OAuthException',
+                    'code' => 2,
+                ],
+            ])),
+            new Response(200, [], json_encode(['success' => true])),
+        ]);
+
+        $client->setResponseErrorDetector('error');
+        $client->setErrorMessageParser('error.message');
+        $client->setRateLimitDetector(static function (mixed $input): bool {
+            return is_array($input)
+                && (($input['error']['code'] ?? null) === 2)
+                && (($input['error']['type'] ?? null) === 'OAuthException');
+        });
+
+        $response = $client->performRequest('GET', '/test', sleep: 1);
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
     public function testOAuth2TokenRefreshLoopPrevention(): void
     {
         // Mock persistent 401s
