@@ -1101,7 +1101,7 @@
                                     pathToSave: $pathToSave,
                                     stream: $stream,
                                     errorMessageNesting: $errorMessageNesting,
-                                    sleep: $sleep > 0 ? $sleep * 2 : 1000000,
+                                    sleep: (int) round($sleep > 0 ? $sleep * 2 : 1000000),
                                 );
                             }
 
@@ -1144,7 +1144,7 @@
                         pathToSave: $pathToSave,
                         stream: $stream,
                         errorMessageNesting: $errorMessageNesting,
-                        sleep: $dynamicSleep ?? ($sleep > 0 ? $sleep * 2 : 1000000), // Default: 1 second = 1000000 microseconds
+                        sleep: (int) round($dynamicSleep ?? ($sleep > 0 ? $sleep * 2 : 1000000)), // Default: 1 second = 1000000 microseconds
                     );
                 }
 
@@ -1234,7 +1234,7 @@
                                         pathToSave: $pathToSave,
                                         stream: $stream,
                                         errorMessageNesting: $errorMessageNesting,
-                                        sleep: $sleep > 0 ? $sleep * 2 : 1000000,
+                                        sleep: (int) round($sleep > 0 ? $sleep * 2 : 1000000),
                                         customErrors: $customErrors,
                                         ignoreAuth: $ignoreAuth,
                                         onFailure: $onFailure,
