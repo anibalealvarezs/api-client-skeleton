@@ -47,6 +47,7 @@ class OAuthV2Client extends Client
         string $token = "",
         ?string $delayHeader = null,
         DelayUnit $delayUnit = DelayUnit::second,
+        ?GuzzleClient $guzzleClient = null,
         ?\Psr\Log\LoggerInterface $logger = null,
         mixed $tokenRefresherCallback = null,
     ) {
