@@ -47,8 +47,8 @@ class OAuthV2Client extends Client
         string $token = "",
         ?string $delayHeader = null,
         DelayUnit $delayUnit = DelayUnit::second,
-        ?GuzzleClient $guzzleClient = null,
         ?\Psr\Log\LoggerInterface $logger = null,
+        mixed $tokenRefresherCallback = null,
     ) {
         parent::__construct(
             baseUrl: $baseUrl,
@@ -70,6 +70,7 @@ class OAuthV2Client extends Client
             delayHeader: $delayHeader,
             delayUnit: $delayUnit,
             logger: $logger,
+            tokenRefresherCallback: $tokenRefresherCallback,
         );
     }
 }

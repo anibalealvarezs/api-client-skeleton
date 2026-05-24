@@ -1540,6 +1540,63 @@ class ClientTest extends TestCase
      * @throws GuzzleException
      * @throws Exception
      */
+    public function testGetNewTokenUsesTokenRefresherCallbackIfSet(): void
+    {
+        $mock = new MockHandler([]); // No requests should be made to Guzzle
+        $handler = HandlerStack::create($mock);
+        $guzzle = new GuzzleClient(['handler' => $handler]);
+
+        $client = new Client(
+            baseUrl: $this->baseUrl,
+            guzzleClient: $guzzle,
+            tokenUrl: $this->tokenUrl,
+            clientId: $this->clientId,
+            clientSecret: $this->clientSecret,
+            refreshToken: $this->refreshToken,
+            authType: AuthType::oAuthV2,
+            authSettings: ['location' => 'header'],
+            tokenRefresherCallback: function () {
+                return 'callback_token';
+            }
+        );
+
+        $token = $client->getNewToken();
+
+        $this->assertEquals('callback_token', $token, 'getNewToken should return the token from the callback');
+    }
+
+    /**
+     * @throws GuzzleException
+     * @throws Exception
+     */
+    public function testGetNewTokenFallsBackToNativeRefreshIfCallbackNotSet(): void
+    {
+        $mock = new MockHandler([
+            new Response(200, [], json_encode(['access_token' => 'native_token']))
+        ]);
+        $handler = HandlerStack::create($mock);
+        $guzzle = new GuzzleClient(['handler' => $handler]);
+
+        $client = new Client(
+            baseUrl: $this->baseUrl,
+            guzzleClient: $guzzle,
+            tokenUrl: $this->tokenUrl,
+            clientId: $this->clientId,
+            clientSecret: $this->clientSecret,
+            refreshToken: $this->refreshToken,
+            authType: AuthType::oAuthV2,
+            authSettings: ['location' => 'header']
+        );
+
+        $token = $client->getNewToken();
+
+        $this->assertEquals('native_token', $token, 'getNewToken should return the token from the native refresh request');
+    }
+
+    /**
+     * @throws GuzzleException
+     * @throws Exception
+     */
     public function testSetAuthTypeAffectsPerformRequest(): void
     {
         $mock = new MockHandler([

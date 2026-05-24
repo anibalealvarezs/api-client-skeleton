@@ -31,6 +31,8 @@ class BearerTokenClient extends Client
         DelayUnit $delayUnit = DelayUnit::second,
         ?GuzzleClient $guzzleClient = null,
         ?LoggerInterface $logger = null,
+        /** @var callable|null */
+        $tokenRefresherCallback = null,
     ) {
         parent::__construct(
             baseUrl: $baseUrl,
@@ -42,6 +44,7 @@ class BearerTokenClient extends Client
             delayHeader: $delayHeader,
             delayUnit: $delayUnit,
             logger: $logger,
+            tokenRefresherCallback: $tokenRefresherCallback,
         );
     }
 }

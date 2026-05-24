@@ -54,6 +54,8 @@
         protected mixed $responseErrorDetector = null;
         protected mixed $rateLimitDetector = null;
         protected mixed $failureHandler = null;
+        /** @var callable|null */
+        protected mixed $tokenRefresherCallback = null;
 
         /**
          * Client constructor.
@@ -118,6 +120,7 @@
             mixed                     $responseErrorDetector = null,
             mixed                     $rateLimitDetector = null,
             ?\Psr\Log\LoggerInterface $logger = null,
+            mixed                     $tokenRefresherCallback = null,
         )
         {
             $this->setLogger($logger);
@@ -152,6 +155,7 @@
             $this->setFailureHandler($failureHandler);
             $this->setResponseErrorDetector($responseErrorDetector);
             $this->setRateLimitDetector($rateLimitDetector);
+            $this->setTokenRefresherCallback($tokenRefresherCallback);
 
             // Validate auth type
             $this->validateAuthType();
@@ -754,6 +758,23 @@
         }
 
         /**
+         * @return mixed
+         */
+        public function getTokenRefresherCallback(): mixed
+        {
+            return $this->tokenRefresherCallback;
+        }
+
+        /**
+         * @param mixed $tokenRefresherCallback
+         * @return void
+         */
+        public function setTokenRefresherCallback(mixed $tokenRefresherCallback): void
+        {
+            $this->tokenRefresherCallback = $tokenRefresherCallback;
+        }
+
+        /**
          * @return array
          */
         public function getDebugData(): array
@@ -927,6 +948,10 @@
          */
         public function getNewToken(): ?string
         {
+            if (is_callable($this->tokenRefresherCallback)) {
+                return ($this->tokenRefresherCallback)();
+            }
+
             $body = [
                 "client_id"     => $this->getClientId(),
                 "client_secret" => $this->getClientSecret(),
@@ -1186,7 +1211,7 @@
                     );
                 }
 
-                if (!$this->getRefreshToken()) {
+                if (!$this->getRefreshToken() && !is_callable($this->tokenRefresherCallback)) {
                     throw new AuthenticationException("Unauthorized. No refresh token provided.", 401);
                 }
 
