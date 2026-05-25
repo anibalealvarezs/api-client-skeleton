@@ -12,13 +12,13 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:anibalealvarezs/oauth-v1.git",
-                "reference": "c82a6c0d693ee5f824e688e0a8d2ba7d2d815746"
+                "reference": "61ce2013dedb18af86113a51fdbf62593960afd7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://satis.anibalalvarez.com/dist/anibalealvarezs/oauth-v1/anibalealvarezs-oauth-v1-c82a6c0d693ee5f824e688e0a8d2ba7d2d815746-zip-b7ce1a.zip",
-                "reference": "c82a6c0d693ee5f824e688e0a8d2ba7d2d815746",
-                "shasum": "43cc8c1ea67d8ccd7b9c5a650b2b5986735a1dd9"
+                "url": "https://satis.anibalalvarez.com/dist/anibalealvarezs/oauth-v1/anibalealvarezs-oauth-v1-61ce2013dedb18af86113a51fdbf62593960afd7-zip-8eb3ca.zip",
+                "reference": "61ce2013dedb18af86113a51fdbf62593960afd7",
+                "shasum": "60444bf49a684c0e9c7e874b6f6a49786d74f6ee"
             },
             "require": {
                 "php": ">=8.3"
@@ -62,7 +62,7 @@
             "support": {
                 "issues": "https://github.com/anibalealvarezs/OAuth-v1/issues"
             },
-            "time": "2026-05-19T13:48:10+00:00"
+            "time": "2026-05-24T22:03:46+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
