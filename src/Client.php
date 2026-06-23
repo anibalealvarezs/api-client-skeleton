@@ -56,6 +56,7 @@
         protected mixed $failureHandler = null;
         /** @var callable|null */
         protected mixed $tokenRefresherCallback = null;
+        protected int $maxRetries = 15;
 
         /**
          * Client constructor.
@@ -801,6 +802,23 @@
         }
 
         /**
+         * @return int
+         */
+        public function getMaxRetries(): int
+        {
+            return $this->maxRetries;
+        }
+
+        /**
+         * @param int $maxRetries
+         * @return void
+         */
+        public function setMaxRetries(int $maxRetries): void
+        {
+            $this->maxRetries = $maxRetries;
+        }
+
+        /**
          * @return void
          * @throws Exception
          */
@@ -1021,8 +1039,11 @@
             array        $customErrors = [], // Ex: ['403' => 'body'] or ['500' => 'code'] or ['404' => 'message']
             bool         $ignoreAuth = false,
             mixed        $onFailure = null,
+            int          $retries = 0,
+            ?int         $maxRetries = null
         ): mixed
         {
+            $maxRetries = $maxRetries ?? $this->getMaxRetries();
             $params = [
                 'headers' => !empty($headers) ? $headers : $this->headers,
                 'verify'  => $verify
@@ -1112,6 +1133,15 @@
                         if ($contents && $this->isErrorBody($contents, $detector)) {
                             $errorMessage = $this->parseErrorData($contents, $errorMessageNesting ?? $this->getErrorMessageParser());
                             if ($this->isRateLimit($contents) || $this->isRateLimit($errorMessage)) {
+                                if ($retries >= $maxRetries) {
+                                    return $this->handleException(
+                                        exception: new ApiRequestException(
+                                            "Max retries reached: " . $errorMessage,
+                                            $response->getStatusCode()
+                                        ),
+                                        onFailure: $onFailure
+                                    );
+                                }
                                 return $this->performRequest(
                                     method: $method,
                                     endpoint: $endpoint,
@@ -1127,6 +1157,8 @@
                                     stream: $stream,
                                     errorMessageNesting: $errorMessageNesting,
                                     sleep: (int) round($sleep > 0 ? $sleep * 2 : 1000000),
+                                    retries: $retries + 1,
+                                    maxRetries: $maxRetries
                                 );
                             }
 
@@ -1146,6 +1178,16 @@
                 // Exponential or custom back-off for rate limit
                 $parsedErrorMessage = $this->getErrorMessage(exception: $e, errorMessageNesting: $errorMessageNesting);
                 if ($e->getCode() == 429 || $this->isRateLimit($e) || $this->isRateLimit($parsedErrorMessage)) {
+                    if ($retries >= $maxRetries) {
+                        return $this->handleException(
+                            exception: new ApiRequestException(
+                                "Max retries reached. " . $parsedErrorMessage,
+                                $e->getCode(),
+                                $e
+                            ),
+                            onFailure: $onFailure
+                        );
+                    }
                     if ($e->hasResponse() && ($delayHeader = $this->getDelayHeader())) {
                         $dynamicSleep = (int)$e->getResponse()->getHeaderLine($delayHeader) *
                             match ($this->getDelayUnit()) {
@@ -1170,6 +1212,8 @@
                         stream: $stream,
                         errorMessageNesting: $errorMessageNesting,
                         sleep: (int) round($dynamicSleep ?? ($sleep > 0 ? $sleep * 2 : 1000000)), // Default: 1 second = 1000000 microseconds
+                        retries: $retries + 1,
+                        maxRetries: $maxRetries
                     );
                 }
 
@@ -1245,6 +1289,15 @@
 
                             if ($contents && $this->isErrorBody($contents, $detector)) {
                                 if ($this->isRateLimit($contents) || $this->isRateLimit($this->parseErrorData($contents, $errorMessageNesting ?? $this->getErrorMessageParser()))) {
+                                    if ($retries >= $maxRetries) {
+                                        return $this->handleException(
+                                            exception: new ApiRequestException(
+                                                "Max retries reached on token refresh.",
+                                                $response->getStatusCode()
+                                            ),
+                                            onFailure: $onFailure
+                                        );
+                                    }
                                     return $this->performRequest(
                                         method: $method,
                                         endpoint: $endpoint,
@@ -1255,11 +1308,13 @@
                                         headers: $headers,
                                         cookies: $cookies,
                                         verify: $verify,
-                                        allowNewToken: $allowNewToken,
+                                        allowNewToken: false, // Don't allow another refresh
                                         pathToSave: $pathToSave,
                                         stream: $stream,
                                         errorMessageNesting: $errorMessageNesting,
                                         sleep: (int) round($sleep > 0 ? $sleep * 2 : 1000000),
+                                        retries: $retries + 1,
+                                        maxRetries: $maxRetries,
                                         customErrors: $customErrors,
                                         ignoreAuth: $ignoreAuth,
                                         onFailure: $onFailure,
