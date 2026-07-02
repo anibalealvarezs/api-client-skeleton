@@ -1244,7 +1244,8 @@
                     );
                 }
 
-                if (!$allowNewToken || $this->authType != AuthType::oAuthV2) {
+                $canRefresh = $this->authType == AuthType::oAuthV2 || is_callable($this->tokenRefresherCallback);
+                if (!$allowNewToken || !$canRefresh) {
                     return $this->handleException(
                         exception: new AuthenticationException(
                             $this->getErrorMessage(exception: $e, errorMessageNesting: $errorMessageNesting),
